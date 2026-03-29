@@ -1,0 +1,5 @@
+.fi-wi-chart canvas {
+    max-height: 180px !important;
+}
+
+@source "../../../../vendor/relaticle/flowforge/resources/views/**/*.blade.php";

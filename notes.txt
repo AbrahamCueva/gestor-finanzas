@@ -1,0 +1,15 @@
+Finanzas
+* Historial de abonos en Deudas — registrar pagos parciales con fecha y monto - check
+* Tipos de cambio — conversión entre monedas si manejas cuentas en dólares - check
+Dashboard
+* Widget de calendario financiero — ver movimientos del mes en formato calendario - check
+* Widget de racha de ahorro — cuántos meses consecutivos has ahorrado - check
+Notificaciones inteligentes
+* Alerta cuando un presupuesto supera el 80% - check
+* Alerta cuando una deuda está próxima a vencer (X días antes) - check
+* Alerta cuando una meta está próxima a su fecha límite - check
+Reportes
+* Comparativa entre dos períodos personalizados - check
+* Exportar reporte PDF de Metas y Deudas - check
+UX
+* Modo de importación masiva — subir un CSV para crear movimientos en lote - check
