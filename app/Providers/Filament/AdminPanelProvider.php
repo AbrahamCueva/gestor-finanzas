@@ -6,6 +6,7 @@ use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugi
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Widgets\Regla502030;
 use App\Models\Setting;
+use Ariefng\FilamentCalculator\CalculatorPlugin;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use Filament\Http\Middleware\Authenticate;
@@ -25,6 +26,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
+use Slimani\MediaManager\MediaManagerPlugin;
+use Weave\BlockNote\Filament\BlockNotePlugin;
+use YourVendor\FilamentNotificationBell\FilamentNotificationBellPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -67,10 +71,14 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->plugins([
+                CalculatorPlugin::make(),
+                BlockNotePlugin::make(),
                 FilamentShieldPlugin::make(),
                 FilamentSpatieRolesPermissionsPlugin::make(),
                 GlobalSearchModalPlugin::make(),
                 FilamentClearCachePlugin::make(),
+                // FilamentNotificationBellPlugin::make(),
+                // MediaManagerPlugin::make(),
                 FilamentEditProfilePlugin::make()
                     ->slug('my-profile')
                     ->setTitle('Mi Perfil')

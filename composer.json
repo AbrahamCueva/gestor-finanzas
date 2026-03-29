@@ -8,8 +8,10 @@
     "require": {
         "php": "^8.2",
         "althinect/filament-spatie-roles-permissions": "^3.3",
+        "ariefng/filament-calculator": "^1.2",
         "bacon/bacon-qr-code": "^3.0",
         "barryvdh/laravel-dompdf": "^3.1",
+        "benriadh1/filament-notification-bell": "^1.0",
         "bezhansalleh/filament-shield": "^4.2",
         "charrafimed/global-search-modal": "^5.0",
         "cms-multi/filament-clear-cache": "^3.0",
@@ -20,8 +22,10 @@
         "minishlink/web-push": "^10.0",
         "pragmarx/google2fa-laravel": "^3.0",
         "relaticle/flowforge": "^4.0",
+        "slimani/filament-media-manager": "^0.9.11",
         "smalot/pdfparser": "^2.12",
-        "spatie/laravel-permission": "*"
+        "spatie/laravel-permission": "*",
+        "weave-php/blocknote-filament": "^0.0.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

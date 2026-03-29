@@ -3,3 +3,7 @@
 }
 
 @source "../../../../vendor/relaticle/flowforge/resources/views/**/*.blade.php";
+
+@import '../../../../vendor/slimani/filament-media-manager/resources/css/media-manager.css';
+
+@source '../../../../vendor/slimani/filament-media-manager/resources/**/*';

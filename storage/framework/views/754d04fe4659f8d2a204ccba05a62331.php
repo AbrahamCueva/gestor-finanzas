@@ -165,7 +165,7 @@
             title: '📊 Dashboard Financiero',
             text: 'Aquí tienes un resumen completo de tu situación financiera. Puedes ver tu balance total, ingresos y egresos del mes, ahorro generado, presupuestos, movimientos recientes y estadísticas como tu racha de ahorro y regla 50/30/20. Todo se actualiza automáticamente para darte una visión clara de tu dinero.',
             attachTo: {
-                element: '[href*="/admin"]',
+                element: '[href*="/"]',
                 on: 'right'
             },
             buttons: [
@@ -607,7 +607,7 @@
             title: '🏷️ Categorías',
             text: 'Organiza tus movimientos con categorías y subcategorías personalizadas. Asígnales iconos y colores.',
             attachTo: {
-                element: '[href*="categoria"]',
+                element: '[href*="/categorias"]',
                 on: 'right'
             },
             buttons: [{
