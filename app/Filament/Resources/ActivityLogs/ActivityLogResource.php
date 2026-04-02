@@ -20,6 +20,16 @@ class ActivityLogResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
     protected static string|UnitEnum|null $navigationGroup = 'Configuración';
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Total de logs registrados';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ActivityLogForm::configure($schema);

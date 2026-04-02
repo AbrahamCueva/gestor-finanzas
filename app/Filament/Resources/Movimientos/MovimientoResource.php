@@ -48,7 +48,17 @@ class MovimientoResource extends Resource
     public static function getGlobalSearchEloquentQuery(): Builder
     {
         return parent::getGlobalSearchEloquentQuery()
-            ->with(['cuenta', 'categoria']); 
+            ->with(['cuenta', 'categoria']);
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Total de movimientos registrados';
     }
 
     public static function form(Schema $schema): Schema

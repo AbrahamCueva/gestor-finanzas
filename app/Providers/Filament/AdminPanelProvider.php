@@ -9,6 +9,7 @@ use App\Models\Setting;
 use Ariefng\FilamentCalculator\CalculatorPlugin;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
+use Filament\Enums\UserMenuPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -61,6 +62,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->userMenu(position: UserMenuPosition::Sidebar)
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->registration(false)
@@ -76,7 +78,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
                 FilamentSpatieRolesPermissionsPlugin::make(),
                 GlobalSearchModalPlugin::make(),
-                FilamentClearCachePlugin::make(),
+                // FilamentClearCachePlugin::make(),
                 // FilamentNotificationBellPlugin::make(),
                 // MediaManagerPlugin::make(),
                 FilamentEditProfilePlugin::make()

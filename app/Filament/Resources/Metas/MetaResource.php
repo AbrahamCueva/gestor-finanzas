@@ -37,6 +37,16 @@ class MetaResource extends Resource
         ];
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Total de metas registradas';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return MetaForm::configure($schema);

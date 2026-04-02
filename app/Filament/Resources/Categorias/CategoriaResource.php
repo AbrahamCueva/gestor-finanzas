@@ -36,6 +36,16 @@ class CategoriaResource extends Resource
         ];
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Total de categorías registradas';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return CategoriaForm::configure($schema);

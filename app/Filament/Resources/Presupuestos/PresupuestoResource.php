@@ -47,6 +47,16 @@ class PresupuestoResource extends Resource
         return static::getUrl('edit', ['record' => $record]);
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Total de presupuestos registrados';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return PresupuestoForm::configure($schema);

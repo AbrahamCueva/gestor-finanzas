@@ -52,6 +52,16 @@ class TransferenciaResource extends Resource
             ->with(['cuentaOrigen', 'cuentaDestino']);
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Total de transferencias registradas';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return TransferenciaForm::configure($schema);

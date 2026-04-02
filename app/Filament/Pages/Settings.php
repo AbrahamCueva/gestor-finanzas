@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\ActivityLog;
 use App\Models\Setting;
 use BackedEnum;
 use Filament\Forms\Components\DatePicker;
@@ -190,6 +191,13 @@ class Settings extends Page implements HasForms
             ->title('Ajustes actualizados')
             ->success()
             ->send();
+
+        ActivityLog::registrar(
+            'configuracion',
+            'Configuración del sistema actualizada',
+            auth()->user(),
+            []
+        );
 
         $this->redirect(request()->header('Referer'));
     }

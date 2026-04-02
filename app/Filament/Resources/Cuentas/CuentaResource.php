@@ -37,6 +37,16 @@ class CuentaResource extends Resource
         ];
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Total de cuentas registradas';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return CuentaForm::configure($schema);

@@ -36,6 +36,16 @@ class SubcategoriaResource extends Resource
         ];
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Total de subcategorías registradas';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return SubcategoriaForm::configure($schema);
