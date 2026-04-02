@@ -340,9 +340,8 @@
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
             <script>
-                (function () {
-                    const meses = @json($detalle['meses']);
-                    const tipo = @json($tipo);
+                function initAcChart() {
+                    const meses = @json($detalle['meses'] ?? []);
                     const ctx = document.getElementById('acChart');
                     if (!ctx) return;
                     if (window._acChart) window._acChart.destroy();
@@ -377,7 +376,11 @@
                             }
                         }
                     });
-                })();
+                };
+
+                initAcChart();
+
+                document.addEventListener('livewire:updated', initAcChart);
             </script>
         @endif
 

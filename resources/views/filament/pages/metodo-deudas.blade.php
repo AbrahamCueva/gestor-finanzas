@@ -481,11 +481,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
-        (function () {
+        function initMdChart() {
             const avalancha = @json($d['avalancha']['historial'] ?? []);
             const bolaDeNieve = @json($d['bolaDeNieve']['historial'] ?? []);
             const ctx = document.getElementById('mdChart');
-            if (!ctx || !avalancha.length) return;
+            if (!ctx) return;
             if (window._mdChart) window._mdChart.destroy();
 
             window._mdChart = new Chart(ctx, {
@@ -528,6 +528,9 @@
                     }
                 }
             });
-        })();
+        }
+
+        initMdChart();
+        document.addEventListener('livewire:updated', initMdChart);;
     </script>
 </x-filament-panels::page>

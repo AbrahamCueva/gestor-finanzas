@@ -556,18 +556,26 @@
                             <tr>
                                 <td style="font-weight:700; color:var(--text);"><?php echo e($fila['mes']); ?></td>
                                 <td style="text-align:right; color:var(--green); font-weight:600;">S/
-                                    <?php echo e(number_format($fila['ingresos'], 2)); ?></td>
+                                    <?php echo e(number_format($fila['ingresos'], 2)); ?>
+
+                                </td>
                                 <td style="text-align:right; color:var(--red);   font-weight:600;">S/
-                                    <?php echo e(number_format($fila['egresos'], 2)); ?></td>
+                                    <?php echo e(number_format($fila['egresos'], 2)); ?>
+
+                                </td>
                                 <td
                                     style="text-align:right; color:<?php echo e($fila['ahorro'] >= 0 ? 'var(--blue)' : 'var(--red)'); ?>; font-weight:600;">
                                     <?php echo e($fila['ahorro'] >= 0 ? '+' : ''); ?>S/ <?php echo e(number_format($fila['ahorro'], 2)); ?>
 
                                 </td>
                                 <td style="text-align:right; font-weight:700; color:var(--gold);">S/
-                                    <?php echo e(number_format($fila['saldo'], 2)); ?></td>
+                                    <?php echo e(number_format($fila['saldo'], 2)); ?>
+
+                                </td>
                                 <td style="text-align:right; color:var(--muted);">S/
-                                    <?php echo e(number_format($fila['saldoBase'], 2)); ?></td>
+                                    <?php echo e(number_format($fila['saldoBase'], 2)); ?>
+
+                                </td>
                                 <td
                                     style="text-align:right; font-weight:700; color:<?php echo e(($fila['saldo'] - $fila['saldoBase']) >= 0 ? 'var(--purple)' : 'var(--red)'); ?>;">
                                     <?php echo e(($fila['saldo'] - $fila['saldoBase']) >= 0 ? '+' : ''); ?>S/
@@ -585,10 +593,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
-        (function () {
+        function initSeChart() {
             const proyeccion = <?php echo json_encode($sim['proyeccion'], 15, 512) ?>;
             const ctx = document.getElementById('seChart');
-            if (!ctx || !proyeccion.length) return;
+            if (!ctx) return;
             if (window._seChart) window._seChart.destroy();
 
             window._seChart = new Chart(ctx, {
@@ -636,7 +644,10 @@
             document.addEventListener('livewire:updated', () => {
                 if (window._seChart) window._seChart.destroy();
             });
-        })();
+        };
+
+        initSeChart();
+        document.addEventListener('livewire:updated', initSeChart);
     </script>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>

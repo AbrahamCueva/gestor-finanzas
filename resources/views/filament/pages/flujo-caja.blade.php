@@ -340,12 +340,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
-        (function () {
+        function initFcChart() {
             const flujo = @json($d['flujo']);
             const ctx = document.getElementById('fcChart');
             if (!ctx) return;
             if (window._fcChart) window._fcChart.destroy();
-
             const conDatos = flujo.filter(f => !f.esFuturo);
 
             window._fcChart = new Chart(ctx, {
@@ -397,6 +396,9 @@
                     }
                 }
             });
-        })();
+        };
+
+        initFcChart();
+        document.addEventListener('livewire:updated', initFcChart);
     </script>
 </x-filament-panels::page>

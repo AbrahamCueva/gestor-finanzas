@@ -14,10 +14,3 @@ class AuditarLoginExitoso
     }
 }
 
-class AuditarLoginFallido
-{
-    public function handle(Failed $event): void
-    {
-        app(AuditoriaService::class)->loginFallido($event->credentials['email'] ?? '');
-    }
-}
