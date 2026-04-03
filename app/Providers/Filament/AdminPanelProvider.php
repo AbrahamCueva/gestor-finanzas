@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
+use App\Filament\Pages\DashboardRatios;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Widgets\Regla502030;
 use App\Models\Setting;
