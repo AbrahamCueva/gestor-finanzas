@@ -19,7 +19,7 @@ class GastosHormiga extends Page
     protected static ?int $navigationSort = 27;
 
     public int $meses = 3;
-    public float $montoMaximo = 30; // S/ máximo para considerar "hormiga"
+    public int $montoMaximo = 30; // S/ máximo para considerar "hormiga"
     public int $frecuenciaMin = 3; // mínimo de veces para considerar frecuente
 
     public function getDatos(): array
@@ -135,5 +135,16 @@ class GastosHormiga extends Page
             $anual >= 300 => 'medio',
             default => 'bajo',
         };
+    }
+    
+
+    public function updated($property): void
+    {
+        if (in_array($property, ['meses', 'montoMaximo', 'frecuenciaMin'])) {
+            $datos = $this->getDatos();
+            $this->dispatch('updateGhChart', [
+                'gastos' => $datos['gastos'],
+            ]);
+        }
     }
 }
