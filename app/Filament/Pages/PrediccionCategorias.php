@@ -21,6 +21,16 @@ class PrediccionCategorias extends Page
 
     public int $mesesHistorial = 3;
 
+    public function updated($property): void
+    {
+        if ($property === 'mesesHistorial') {
+            $datos = $this->getDatos();
+            $this->dispatch('updatePcChart', [
+                'predicciones' => $datos['predicciones'],
+            ]);
+        }
+    }
+
     public function getDatos(): array
     {
         $categorias = Categoria::where('tipo', 'egreso')
@@ -44,7 +54,6 @@ class PrediccionCategorias extends Page
                 $historial[] = round($gasto, 2);
             }
 
-            // Gasto actual del mes en curso
             $gastoMesActual = Movimiento::where('tipo_movimiento', 'egreso')
                 ->where('categoria_id', $cat->id)
                 ->whereBetween('fecha', [now()->startOfMonth(), now()->endOfMonth()])
@@ -54,17 +63,14 @@ class PrediccionCategorias extends Page
             if (empty($conDatos) && $gastoMesActual == 0)
                 continue;
 
-            // Predicción con regresión lineal simple
             $prediccion = $this->predecirConRegresion($historial);
 
-            // Ajustar por días transcurridos del mes actual
             $diaActual = now()->day;
             $diasMes = now()->daysInMonth;
             $proyeccion = $diaActual > 0 && $gastoMesActual > 0
                 ? round(($gastoMesActual / $diaActual) * $diasMes, 2)
                 : $prediccion;
 
-            // Combinar predicción histórica con proyección actual (70/30)
             $prediccionFinal = $gastoMesActual > 0
                 ? round($prediccion * 0.3 + $proyeccion * 0.7, 2)
                 : $prediccion;
@@ -97,10 +103,8 @@ class PrediccionCategorias extends Page
             ];
         }
 
-        // Ordenar por predicción descendente
         usort($predicciones, fn($a, $b) => $b['prediccion'] <=> $a['prediccion']);
 
-        // Alertas
         $alertas = collect($predicciones)
             ->filter(fn($p) => $p['pctDiferencia'] > 20 && $p['tendencia'] === 'subiendo')
             ->values()
@@ -114,6 +118,7 @@ class PrediccionCategorias extends Page
             'mesActual' => now()->translatedFormat('F Y'),
             'diaActual' => now()->day,
             'diasMes' => now()->daysInMonth,
+            'diasRestantes' => now()->daysInMonth - now()->day,
         ];
     }
 
@@ -125,12 +130,7 @@ class PrediccionCategorias extends Page
         if ($n === 1)
             return $historial[0];
 
-        // Regresión lineal: y = a + bx
-        $sumX = 0;
-        $sumY = 0;
-        $sumXY = 0;
-        $sumX2 = 0;
-
+        $sumX = $sumY = $sumXY = $sumX2 = 0;
         foreach ($historial as $i => $y) {
             $x = $i + 1;
             $sumX += $x;
@@ -146,8 +146,7 @@ class PrediccionCategorias extends Page
         $b = ($n * $sumXY - $sumX * $sumY) / $denom;
         $a = ($sumY - $b * $sumX) / $n;
 
-        $prediccion = $a + $b * ($n + 1);
-        return max(0, round($prediccion, 2));
+        return max(0, round($a + $b * ($n + 1), 2));
     }
 
     private function calcularTendencia(array $historial): string

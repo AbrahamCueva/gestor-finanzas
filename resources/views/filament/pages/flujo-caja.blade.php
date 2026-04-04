@@ -3,7 +3,20 @@
         $d = $this->getDatos();
         $mes = $this->getMesActual();
         $anio = $this->getAnioActual();
-        $nombresMeses = [1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'];
+        $nombresMeses = [
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre',
+        ];
     @endphp
 
     <style>
@@ -294,13 +307,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($d['flujo'] as $fila)
-                            @if($fila['ingresos'] > 0 || $fila['egresos'] > 0 || !$fila['esFuturo'])
+                        @foreach ($d['flujo'] as $fila)
+                            @if ($fila['ingresos'] > 0 || $fila['egresos'] > 0 || !$fila['esFuturo'])
                                 <tr class="{{ $fila['esFuturo'] ? 'futuro' : '' }}">
                                     <td style="font-weight:700; color:var(--text);">
                                         {{ $fila['fecha'] }}
-                                        @if($fila['esFuturo'])<span
-                                        style="font-size:.58rem; color:var(--muted);">futuro</span>@endif
+                                        @if ($fila['esFuturo'])
+                                            <span style="font-size:.58rem; color:var(--muted);">futuro</span>
+                                        @endif
                                     </td>
                                     <td style="text-align:right; color:var(--green); font-weight:600;">
                                         {{ $fila['ingresos'] > 0 ? '+S/ ' . number_format($fila['ingresos'], 2) : '—' }}
@@ -317,11 +331,13 @@
                                         S/ {{ number_format($fila['acumulado'], 2) }}
                                     </td>
                                     <td>
-                                        @if($fila['neto'] > 0)
-                                            <span class="fc-badge" style="background:rgba(34,197,94,.12); color:var(--green);">✓
+                                        @if ($fila['neto'] > 0)
+                                            <span class="fc-badge"
+                                                style="background:rgba(34,197,94,.12); color:var(--green);">✓
                                                 Positivo</span>
                                         @elseif($fila['neto'] < 0)
-                                            <span class="fc-badge" style="background:rgba(239,68,68,.12); color:var(--red);">↓
+                                            <span class="fc-badge"
+                                                style="background:rgba(239,68,68,.12); color:var(--red);">↓
                                                 Negativo</span>
                                         @else
                                             <span class="fc-badge" style="background:var(--card); color:var(--muted);">—
@@ -340,67 +356,136 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
-        function initFcChart() {
-            const flujo = @json($d['flujo']);
-            const ctx = document.getElementById('fcChart');
-            if (!ctx) return;
-            if (window._fcChart) window._fcChart.destroy();
-            const conDatos = flujo.filter(f => !f.esFuturo);
-
-            window._fcChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: conDatos.map(f => f.fecha),
-                    datasets: [
-                        {
-                            label: 'Ingresos',
-                            data: conDatos.map(f => f.ingresos),
-                            backgroundColor: 'rgba(34,197,94,.5)',
-                            borderColor: '#22c55e',
-                            borderWidth: 1, borderRadius: 3,
-                        },
-                        {
-                            label: 'Egresos',
-                            data: conDatos.map(f => -f.egresos),
-                            backgroundColor: 'rgba(239,68,68,.5)',
-                            borderColor: '#ef4444',
-                            borderWidth: 1, borderRadius: 3,
-                        },
-                        {
-                            label: 'Acumulado',
-                            data: conDatos.map(f => f.acumulado),
-                            type: 'line',
-                            borderColor: '#60a5fa',
-                            backgroundColor: 'rgba(96,165,250,.08)',
-                            borderWidth: 2.5, tension: 0.4,
-                            pointRadius: 3, fill: true,
-                            yAxisID: 'y1',
-                        },
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: { labels: { color: '#6b7280', font: { size: 11 } } },
-                        tooltip: {
-                            backgroundColor: 'rgba(15,23,42,.9)',
-                            titleColor: '#f1f5f9', bodyColor: '#94a3b8',
-                            callbacks: { label: c => ` ${c.dataset.label}: S/ ${Math.abs(c.parsed.y).toFixed(2)}` }
-                        }
-                    },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 10 }, maxRotation: 45 } },
-                        y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#6b7280', callback: v => 'S/' + v } },
-                        y1: { position: 'right', grid: { display: false }, ticks: { color: '#60a5fa', callback: v => 'S/' + v } },
-                    }
+        (function() {
+            function renderFcChart(flujo) {
+                if (typeof Chart === 'undefined') {
+                    setTimeout(() => renderFcChart(flujo), 100);
+                    return;
                 }
-            });
-        };
 
-        initFcChart();
-        document.addEventListener('livewire:navigated', () => {
-            setTimeout(initFcChart, 50);
-        });
+                const ctx = document.getElementById('fcChart');
+                if (!ctx) return;
+
+                if (window._fcChart) {
+                    window._fcChart.destroy();
+                    window._fcChart = null;
+                }
+
+                const conDatos = flujo.filter(f => !f.esFuturo);
+
+                window._fcChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: conDatos.map(f => f.fecha),
+                        datasets: [{
+                                label: 'Ingresos',
+                                data: conDatos.map(f => f.ingresos),
+                                backgroundColor: 'rgba(34,197,94,.5)',
+                                borderColor: '#22c55e',
+                                borderWidth: 1,
+                                borderRadius: 3,
+                            },
+                            {
+                                label: 'Egresos',
+                                data: conDatos.map(f => -f.egresos),
+                                backgroundColor: 'rgba(239,68,68,.5)',
+                                borderColor: '#ef4444',
+                                borderWidth: 1,
+                                borderRadius: 3,
+                            },
+                            {
+                                label: 'Acumulado',
+                                data: conDatos.map(f => f.acumulado),
+                                type: 'line',
+                                borderColor: '#60a5fa',
+                                backgroundColor: 'rgba(96,165,250,.08)',
+                                borderWidth: 2.5,
+                                tension: 0.4,
+                                pointRadius: 3,
+                                fill: true,
+                                yAxisID: 'y1',
+                            },
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#6b7280',
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15,23,42,.9)',
+                                titleColor: '#f1f5f9',
+                                bodyColor: '#94a3b8',
+                                callbacks: {
+                                    label: c => ` ${c.dataset.label}: S/ ${Math.abs(c.parsed.y).toFixed(2)}`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    font: {
+                                        size: 10
+                                    },
+                                    maxRotation: 45
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255,255,255,.04)'
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    callback: v => 'S/' + v
+                                }
+                            },
+                            y1: {
+                                position: 'right',
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#60a5fa',
+                                    callback: v => 'S/' + v
+                                }
+                            },
+                        }
+                    }
+                });
+            }
+
+            // Escuchar evento del backend
+            document.addEventListener('livewire:init', () => {
+                Livewire.on('updateFcChart', (data) => {
+                    const payload = Array.isArray(data) ? data[0] : data;
+                    setTimeout(() => renderFcChart(payload.flujo), 80);
+                });
+            });
+
+            // Primera carga
+            document.addEventListener('DOMContentLoaded', () => {
+                renderFcChart(@json($d['flujo']));
+            });
+
+            // Re-render por navegación Livewire
+            document.addEventListener('livewire:navigated', () => {
+                setTimeout(() => renderFcChart(@json($d['flujo'])), 80);
+            });
+        })();
     </script>
 </x-filament-panels::page>

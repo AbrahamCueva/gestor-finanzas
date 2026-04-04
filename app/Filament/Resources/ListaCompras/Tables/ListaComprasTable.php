@@ -74,6 +74,7 @@ class ListaComprasTable
                     ->sortable()
                     ->placeholder('—'),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 SelectFilter::make('prioridad')
                     ->options([

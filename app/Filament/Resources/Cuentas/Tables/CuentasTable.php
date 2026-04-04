@@ -51,6 +51,7 @@ class CuentasTable
                     ->sortable()
                     ->alignCenter(),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 SelectFilter::make('tipo_cuenta')
                     ->label('Tipo de cuenta')

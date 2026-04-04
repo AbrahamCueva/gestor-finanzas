@@ -3,14 +3,10 @@
 namespace App\Providers\Filament;
 
 use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
-use App\Filament\Pages\DashboardRatios;
-use App\Filament\Pages\PrediccionCategorias;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Widgets\Regla502030;
 use App\Models\Setting;
-use Ariefng\FilamentCalculator\CalculatorPlugin;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
-use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use Filament\Enums\UserMenuPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -29,9 +25,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
-use Slimani\MediaManager\MediaManagerPlugin;
-use Weave\BlockNote\Filament\BlockNotePlugin;
-use YourVendor\FilamentNotificationBell\FilamentNotificationBellPlugin;
+use TomatoPHP\FilamentMenus\FilamentMenusPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -57,8 +51,8 @@ class AdminPanelProvider extends PanelProvider
             ]))
             ->favicon(
                 fn() => Setting::get('favicon')
-                    ? asset('storage/' . Setting::get('favicon'))
-                    : null
+                ? asset('storage/' . Setting::get('favicon'))
+                : null
             )
             ->brandLogoHeight('40px')
             ->colors([
@@ -75,14 +69,9 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->plugins([
-                CalculatorPlugin::make(),
-                BlockNotePlugin::make(),
                 FilamentShieldPlugin::make(),
                 FilamentSpatieRolesPermissionsPlugin::make(),
                 GlobalSearchModalPlugin::make(),
-                // FilamentClearCachePlugin::make(),
-                // FilamentNotificationBellPlugin::make(),
-                // MediaManagerPlugin::make(),
                 FilamentEditProfilePlugin::make()
                     ->slug('my-profile')
                     ->setTitle('Mi Perfil')

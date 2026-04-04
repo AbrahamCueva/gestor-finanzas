@@ -228,6 +228,8 @@
             height: 220px;
         }
     </style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
     <div class="ac">
 
@@ -265,7 +267,8 @@
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $resumen; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                         <?php
                             $color = $cat['color'] ?? '#6b7280';
-                            $tendColor = $cat['tendencia'] > 0 ? '#ef4444' : ($cat['tendencia'] < 0 ? '#22c55e' : '#6b7280');
+                            $tendColor =
+                                $cat['tendencia'] > 0 ? '#ef4444' : ($cat['tendencia'] < 0 ? '#22c55e' : '#6b7280');
                             $tendEmoji = $cat['tendencia'] > 0 ? '↑' : ($cat['tendencia'] < 0 ? '↓' : '→');
                             $esActivo = $categoriaId == $cat['id'];
                         ?>
@@ -274,7 +277,8 @@
 
                             <div class="ac-cat-header">
                                 <div class="ac-cat-nombre"><?php echo e($cat['nombre']); ?></div>
-                                <div class="ac-cat-total" style="color:<?php echo e($tipo === 'egreso' ? '#ef4444' : '#22c55e'); ?>;">
+                                <div class="ac-cat-total"
+                                    style="color:<?php echo e($tipo === 'egreso' ? '#ef4444' : '#22c55e'); ?>;">
                                     S/ <?php echo e(number_format($cat['total'], 0)); ?>
 
                                 </div>
@@ -282,13 +286,15 @@
 
                             <div class="ac-bar-wrap">
                                 <div class="ac-bar-fill"
-                                    style="width:<?php echo e(($cat['total'] / $maxTotal) * 100); ?>%; background:<?php echo e($color); ?>;"></div>
+                                    style="width:<?php echo e(($cat['total'] / $maxTotal) * 100); ?>%; background:<?php echo e($color); ?>;">
+                                </div>
                             </div>
 
                             <div class="ac-cat-row">
                                 <span><?php echo e($cat['pct']); ?>% del total</span>
                                 <span><?php echo e($cat['conteo']); ?> movimientos</span>
-                                <span class="ac-tend" style="background:<?php echo e($tendColor); ?>18; color:<?php echo e($tendColor); ?>;">
+                                <span class="ac-tend"
+                                    style="background:<?php echo e($tendColor); ?>18; color:<?php echo e($tendColor); ?>;">
                                     <?php echo e($tendEmoji); ?> <?php echo e(abs($cat['tendencia'])); ?>%
                                 </span>
                             </div>
@@ -344,95 +350,124 @@
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($m['topSub'] !== '—'): ?>
                             <div
                                 style="display:flex; gap:.5rem; font-size:.7rem; margin-bottom:.3rem; padding:.375rem .625rem; background:var(--card); border-radius:.375rem;">
-                                <span style="font-weight:700; color:var(--text); min-width:60px;"><?php echo e($m['mes']); ?></span>
+                                <span
+                                    style="font-weight:700; color:var(--text); min-width:60px;"><?php echo e($m['mes']); ?></span>
                                 <span style="color:var(--muted);"><?php echo e($m['topSub']); ?></span>
                             </div>
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                 </div>
             </div>
-
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-
-            <script>
-                let acChart;
-
-                function renderAcChart(meses, tipo) {
-                    const ctx = document.getElementById('acChart');
-                    if (!ctx) return;
-
-                    if (acChart) acChart.destroy();
-
-                    const color = tipo === 'egreso' ? '#ef4444' : '#22c55e';
-
-                    acChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: meses.map(m => m.mes),
-                            datasets: [{
-                                label: 'Monto mensual',
-                                data: meses.map(m => m.total),
-                                backgroundColor: color + '55',
-                                borderColor: color,
-                                borderWidth: 2,
-                                borderRadius: 6,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-
-                            interaction: {
-                                mode: 'index',
-                                intersect: false
-                            },
-
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    backgroundColor: 'rgba(15,23,42,.95)',
-                                    titleColor: '#f1f5f9',
-                                    bodyColor: '#cbd5e1',
-                                    callbacks: {
-                                        label: c => ` S/ ${c.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
-                                    }
-                                }
-                            },
-
-                            scales: {
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { color: '#6b7280', font: { size: 10 } }
-                                },
-                                y: {
-                                    beginAtZero: true,
-                                    grid: { color: 'rgba(255,255,255,.05)' },
-                                    ticks: {
-                                        color: '#6b7280',
-                                        callback: v => 'S/ ' + v
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-
-                document.addEventListener('livewire:init', () => {
-                    Livewire.on('updateCatChart', ({ meses, tipo }) => {
-                        setTimeout(() => {
-                            renderAcChart(meses, tipo);
-                        }, 50);
-                    });
-                });
-
-                // primera carga
-                document.addEventListener('DOMContentLoaded', () => {
-                    renderAcChart(<?php echo json_encode($detalle['meses'] ?? [], 15, 512) ?>, <?php echo json_encode($tipo, 15, 512) ?>);
-                });
-            </script>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     </div>
+
+    <script>
+        (function() {
+            let acChart;
+
+            function renderAcChart(meses, tipo) {
+                // Esperar a que Chart.js esté disponible
+                if (typeof Chart === 'undefined') {
+                    setTimeout(() => renderAcChart(meses, tipo), 100);
+                    return;
+                }
+
+                const ctx = document.getElementById('acChart');
+                if (!ctx) return;
+
+                if (acChart) {
+                    acChart.destroy();
+                    acChart = null;
+                }
+
+                const color = tipo === 'egreso' ? '#ef4444' : '#22c55e';
+
+                acChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: meses.map(m => m.mes),
+                        datasets: [{
+                            label: 'Monto mensual',
+                            data: meses.map(m => m.total),
+                            backgroundColor: color + '55',
+                            borderColor: color,
+                            borderWidth: 2,
+                            borderRadius: 6,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15,23,42,.95)',
+                                titleColor: '#f1f5f9',
+                                bodyColor: '#cbd5e1',
+                                callbacks: {
+                                    label: c =>
+                                        ` S/ ${c.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255,255,255,.05)'
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    callback: v => 'S/ ' + v
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Escuchar evento dispatch de Livewire
+            document.addEventListener('livewire:init', () => {
+                Livewire.on('updateCatChart', (data) => {
+                    // Livewire v3 pasa los datos como array, el primer elemento es el payload
+                    const payload = Array.isArray(data) ? data[0] : data;
+                    setTimeout(() => renderAcChart(payload.meses, payload.tipo), 80);
+                });
+            });
+
+            // Primera carga (cuando el canvas ya existe en el HTML inicial)
+            document.addEventListener('DOMContentLoaded', () => {
+                const initialMeses = <?php echo json_encode($detalle['meses'] ?? [], 15, 512) ?>;
+                const initialTipo = <?php echo json_encode($tipo, 15, 512) ?>;
+                if (initialMeses.length > 0 && document.getElementById('acChart')) {
+                    renderAcChart(initialMeses, initialTipo);
+                }
+            });
+
+            // Para cuando Livewire re-renderiza y el canvas aparece en el DOM
+            document.addEventListener('livewire:navigated', () => {
+                const initialMeses = <?php echo json_encode($detalle['meses'] ?? [], 15, 512) ?>;
+                const initialTipo = <?php echo json_encode($tipo, 15, 512) ?>;
+                if (initialMeses.length > 0 && document.getElementById('acChart')) {
+                    setTimeout(() => renderAcChart(initialMeses, initialTipo), 80);
+                }
+            });
+        })();
+    </script>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal166a02a7c5ef5a9331faf66fa665c256)): ?>
@@ -442,4 +477,5 @@
 <?php if (isset($__componentOriginal166a02a7c5ef5a9331faf66fa665c256)): ?>
 <?php $component = $__componentOriginal166a02a7c5ef5a9331faf66fa665c256; ?>
 <?php unset($__componentOriginal166a02a7c5ef5a9331faf66fa665c256); ?>
-<?php endif; ?><?php /**PATH C:\Users\ricoa\Documents\gestor-finanzas\resources\views/filament/pages/analisis-categorias.blade.php ENDPATH**/ ?>
+<?php endif; ?>
+<?php /**PATH C:\Users\ricoa\Documents\gestor-finanzas\resources\views/filament/pages/analisis-categorias.blade.php ENDPATH**/ ?>

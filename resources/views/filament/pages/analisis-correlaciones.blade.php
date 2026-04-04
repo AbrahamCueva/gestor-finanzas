@@ -308,9 +308,8 @@
                     @endphp
                     <div class="ac-dia-item">
                         <div class="ac-dia-bar-wrap">
-                            <div class="ac-dia-bar"
-                                style="height:{{ max(2, $altura) }}%;
-                            background:{{ $esMayor ? '#ef4444' : '#ef444466' }};">
+                            <div class="ac-dia-bar" style="height:{{ max(2, $altura) }}%;
+                                background:{{ $esMayor ? '#ef4444' : '#ef444466' }};">
                             </div>
                         </div>
                         <div class="ac-dia-nombre" style="{{ $esMayor ? 'color:#ef4444; font-weight:700;' : '' }}">
@@ -384,26 +383,40 @@
         <div class="ac-card">
             <div class="ac-title">🕐 Registros por hora del día (últimos 6 meses)</div>
             @php $maxHora = max(array_column($d['porHora'], 'conteo')) ?: 1; @endphp
-            <div class="ac-horas">
+
+            <div style="display:flex; align-items: flex-end; gap: 3px; height: 120px; padding-top: 8px;">
                 @foreach ($d['porHora'] as $hora)
-                    @php
-                        $altura = round(($hora['conteo'] / $maxHora) * 100);
-                        $esPico = $hora['conteo'] === max(array_column($d['porHora'], 'conteo'));
-                    @endphp
-                    <div class="ac-hora-bar" title="{{ $hora['label'] }}: {{ $hora['conteo'] }} registros"
-                        style="height:{{ max(2, $altura) }}%;
-                    background:{{ $esPico ? '#6366f1' : '#6366f144' }};">
-                    </div>
+                        @php
+                            $altura = round(($hora['conteo'] / $maxHora) * 100);
+                            $esPico = $hora['conteo'] === max(array_column($d['porHora'], 'conteo'));
+                        @endphp
+                        <div style="
+                        flex: 1;
+                        height: {{ max(2, $altura) }}%;
+                        border-radius: 3px 3px 0 0;
+                        background: {{ $esPico ? '#6366f1' : '#6366f144' }};
+                        min-width: 0;
+                        transition: background .15s;
+                        cursor: default;
+                        position: relative;
+                    " title="{{ $hora['label'] }}: {{ $hora['conteo'] }} registros"></div>
                 @endforeach
             </div>
-            <div class="ac-horas-labels">
+
+            {{-- Labels --}}
+            <div style="display:flex; gap: 3px; margin-top: 4px;">
                 @foreach ($d['porHora'] as $hora)
-                    <div class="ac-hora-label">
-                        {{ $hora['hora'] % 6 === 0 ? $hora['label'] : '' }}
-                    </div>
+                        <div style="
+                        flex: 1;
+                        font-size: 0.55rem;
+                        color: var(--w-muted);
+                        text-align: center;
+                        min-width: 0;
+                    ">{{ $hora['hora'] % 6 === 0 ? $hora['label'] : '' }}</div>
                 @endforeach
             </div>
-            <div style="font-size:0.68rem; color:var(--w-muted); margin-top:0.375rem;">
+
+            <div style="font-size:0.68rem; color:var(--w-muted); margin-top:0.5rem;">
                 Hora en que más registros creas — útil para saber cuándo eres más activo en la app.
             </div>
         </div>

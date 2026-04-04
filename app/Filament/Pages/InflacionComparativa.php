@@ -22,17 +22,17 @@ class InflacionComparativa extends Page
 
     public function getDatos(): array
     {
-        $hoy      = Carbon::now();
-        $meses    = $this->anios * 12;
-        $datos    = [];
-        $nombres  = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        $hoy = Carbon::now();
+        $meses = $this->anios * 12;
+        $datos = [];
+        $nombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
         for ($i = $meses - 1; $i >= 0; $i--) {
-            $fecha  = $hoy->copy()->subMonths($i);
-            $anio   = $fecha->year;
-            $mes    = $fecha->month;
+            $fecha = $hoy->copy()->subMonths($i);
+            $anio = $fecha->year;
+            $mes = $fecha->month;
             $inicio = $fecha->copy()->startOfMonth();
-            $fin    = $fecha->copy()->endOfMonth();
+            $fin = $fecha->copy()->endOfMonth();
 
             // Gasto del mes
             $gastoMes = Movimiento::where('tipo_movimiento', 'egreso')
@@ -41,24 +41,24 @@ class InflacionComparativa extends Page
 
             // Inflación del mes
             $inflacionMensual = InflacionPeruana::getTasaMensual($anio, $mes);
-            $inflacionAnual   = InflacionPeruana::where('anio', $anio)
+            $inflacionAnual = InflacionPeruana::where('anio', $anio)
                 ->where('mes', $mes)
                 ->value('tasa_anual') ?? 2.00;
 
             $datos[] = [
-                'mes'              => $nombres[$mes - 1] . ' ' . substr($anio, 2),
-                'mesLabel'         => $nombres[$mes - 1],
-                'anio'             => $anio,
-                'gasto'            => round($gastoMes, 2),
+                'mes' => $nombres[$mes - 1] . ' ' . substr($anio, 2),
+                'mesLabel' => $nombres[$mes - 1],
+                'anio' => $anio,
+                'gasto' => round($gastoMes, 2),
                 'inflacionMensual' => (float) $inflacionMensual,
-                'inflacionAnual'   => (float) $inflacionAnual,
+                'inflacionAnual' => (float) $inflacionAnual,
             ];
         }
 
         // Calcular variación de gastos mes a mes
         for ($i = 1; $i < count($datos); $i++) {
             $anterior = $datos[$i - 1]['gasto'];
-            $actual   = $datos[$i]['gasto'];
+            $actual = $datos[$i]['gasto'];
             $datos[$i]['variacionGasto'] = $anterior > 0
                 ? round((($actual - $anterior) / $anterior) * 100, 2)
                 : 0;
@@ -79,21 +79,21 @@ class InflacionComparativa extends Page
         $diferenciaPoder = round($ultimoGasto - $gastoAjustado, 2);
 
         return [
-            'datos'              => $datos,
-            'analisis'           => $analisis,
+            'datos' => $datos,
+            'analisis' => $analisis,
             'inflacionAcumulada' => round($inflacionAcumulada, 2),
-            'ultimaInflacion'    => InflacionPeruana::getUltimaTasa(),
-            'diferenciaPoder'    => $diferenciaPoder,
-            'gastoAjustado'      => round($gastoAjustado, 2),
-            'primerGasto'        => round($primerGasto, 2),
-            'ultimoGasto'        => round($ultimoGasto, 2),
+            'ultimaInflacion' => InflacionPeruana::getUltimaTasa(),
+            'diferenciaPoder' => $diferenciaPoder,
+            'gastoAjustado' => round($gastoAjustado, 2),
+            'primerGasto' => round($primerGasto, 2),
+            'ultimoGasto' => round($ultimoGasto, 2),
         ];
     }
 
     private function analizarComparativa(array $datos): array
     {
         $mesesSuperanInflacion = 0;
-        $mesesBajoInflacion    = 0;
+        $mesesBajoInflacion = 0;
 
         foreach ($datos as $d) {
             if ($d['variacionGasto'] > $d['inflacionMensual']) {
@@ -107,9 +107,19 @@ class InflacionComparativa extends Page
 
         return [
             'mesesSuperan' => $mesesSuperanInflacion,
-            'mesesBajo'    => $mesesBajoInflacion,
-            'pctSuperan'   => $total > 0 ? round(($mesesSuperanInflacion / $total) * 100) : 0,
-            'estado'       => $mesesSuperanInflacion > $mesesBajoInflacion ? 'critico' : 'bueno',
+            'mesesBajo' => $mesesBajoInflacion,
+            'pctSuperan' => $total > 0 ? round(($mesesSuperanInflacion / $total) * 100) : 0,
+            'estado' => $mesesSuperanInflacion > $mesesBajoInflacion ? 'critico' : 'bueno',
         ];
+    }
+
+    public function updated($property): void
+    {
+        if ($property === 'anios') {
+            $datos = $this->getDatos();
+            $this->dispatch('updateIcChart', [
+                'datos' => $datos['datos'],
+            ]);
+        }
     }
 }

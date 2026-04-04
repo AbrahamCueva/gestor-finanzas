@@ -1,10 +1,8 @@
 const CACHE_NAME = "ricox-v1";
 const OFFLINE_URL = "/offline";
 
-// Recursos a cachear en instalación
 const PRECACHE = [
     "/",
-    "/admin",
     "/offline",
     "/manifest.json",
     "/icons/icon-192.png",
@@ -47,11 +45,14 @@ self.addEventListener("fetch", (event) => {
     // Solo manejar requests del mismo origen
     if (url.origin !== location.origin) return;
 
-    // No cachear rutas de API/Livewire
+    // NO cachear nada de admin, livewire, api ni POST
     if (
         url.pathname.startsWith("/livewire") ||
+        url.pathname.startsWith("/admin") ||
         url.pathname.startsWith("/ricox/") ||
         url.pathname.startsWith("/api/") ||
+        url.pathname.includes("sanctum") ||
+        url.pathname.includes("csrf") ||
         request.method !== "GET"
     ) {
         return;
@@ -63,7 +64,7 @@ self.addEventListener("fetch", (event) => {
 
             return fetch(request)
                 .then((response) => {
-                    // Cachear recursos estáticos
+                    // Solo cachear recursos estáticos
                     if (
                         response.ok &&
                         (url.pathname.startsWith("/build/") ||
@@ -81,7 +82,6 @@ self.addEventListener("fetch", (event) => {
                     return response;
                 })
                 .catch(() => {
-                    // Offline — mostrar página offline
                     if (request.headers.get("accept")?.includes("text/html")) {
                         return caches.match(OFFLINE_URL);
                     }
@@ -151,6 +151,5 @@ self.addEventListener("sync", (event) => {
 });
 
 async function sincronizarMovimientos() {
-    // Placeholder para sync en background
     console.log("PWA: Background sync ejecutado");
 }

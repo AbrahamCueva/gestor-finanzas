@@ -97,6 +97,7 @@ class PresupuestosTable
                     ->trueLabel('Solo activos')
                     ->falseLabel('Solo inactivos'),
             ])
+            ->defaultSort('id', 'desc')
             ->headerActions([
                 ExportAction::make()
                     ->label('Exportar presupuestos')

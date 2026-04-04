@@ -45,6 +45,7 @@ class SubcategoriasTable
                     ->dateTime('d/m/Y H:i')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 SelectFilter::make('categoria_id')
                     ->label('Filtrar por Categoría')

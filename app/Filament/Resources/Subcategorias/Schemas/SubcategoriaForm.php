@@ -9,6 +9,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class SubcategoriaForm
 {
@@ -23,7 +24,11 @@ class SubcategoriaForm
                         Grid::make(2)
                             ->schema([
                                 Select::make('categoria_id')
-                                    ->relationship('categoria', 'nombre')
+                                    ->relationship(
+                                        name: 'categoria',
+                                        titleAttribute: 'nombre',
+                                        modifyQueryUsing: fn(Builder $query) => $query->orderBy('nombre', 'asc'), // <--- ¡Esto es la clave!
+                                    )
                                     ->label('Categoría Padre')
                                     ->placeholder('Selecciona una categoría...')
                                     ->required()

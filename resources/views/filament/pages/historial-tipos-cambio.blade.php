@@ -259,74 +259,101 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
         (function() {
-            const labels = @json($datos['labels']);
-            const valores = @json($datos['valores']);
-            const color = @json($selColor);
+            function renderHtcChart(labels, valores, color, moneda) {
+                if (typeof Chart === 'undefined') {
+                    setTimeout(function() {
+                        renderHtcChart(labels, valores, color, moneda);
+                    }, 100);
+                    return;
+                }
 
-            const ctx = document.getElementById('htcChart');
-            if (!ctx) return;
+                var ctx = document.getElementById('htcChart');
+                if (!ctx) return;
 
-            if (window._htcChart) window._htcChart.destroy();
+                if (window._htcChart) {
+                    window._htcChart.destroy();
+                    window._htcChart = null;
+                }
 
-            window._htcChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: 'Tasa PEN → {{ $moneda }}',
-                        data: valores,
-                        borderColor: color,
-                        backgroundColor: color + '18',
-                        borderWidth: 2,
-                        pointRadius: labels.length <= 15 ? 4 : 2,
-                        pointBackgroundColor: color,
-                        tension: 0.4,
-                        fill: true,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: ctx => ' ' + ctx.parsed.y.toFixed(4) + ' ' + '{{ $moneda }}',
-                            }
-                        }
+                window._htcChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Tasa PEN → ' + moneda,
+                            data: valores,
+                            borderColor: color,
+                            backgroundColor: color + '18',
+                            borderWidth: 2,
+                            pointRadius: labels.length <= 15 ? 4 : 2,
+                            pointBackgroundColor: color,
+                            tension: 0.4,
+                            fill: true,
+                        }]
                     },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.04)'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
                             },
-                            ticks: {
-                                color: '#6b7280',
-                                font: {
-                                    size: 10
+                            tooltip: {
+                                callbacks: {
+                                    label: function(c) {
+                                        return ' ' + c.parsed.y.toFixed(4) + ' ' + moneda;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.04)'
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    font: {
+                                        size: 10
+                                    }
                                 }
                             },
-                        },
-                        y: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.04)'
-                            },
-                            ticks: {
-                                color: '#6b7280',
-                                font: {
-                                    size: 10
+                            y: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.04)'
                                 },
-                                callback: v => v.toFixed(4),
-                            },
+                                ticks: {
+                                    color: '#6b7280',
+                                    font: {
+                                        size: 10
+                                    },
+                                    callback: function(v) {
+                                        return v.toFixed(4);
+                                    }
+                                }
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
 
-            document.addEventListener('livewire:navigated', () => {
-                if (window._htcChart) window._htcChart.destroy();
+            // Primera carga
+            renderHtcChart(
+                @js($datos['labels']),
+                @js($datos['valores']),
+                @js($selColor),
+                @js($moneda)
+            );
+
+            // Actualizaciones via dispatch
+            document.addEventListener('livewire:init', function() {
+                Livewire.on('updateHtcChart', function(data) {
+                    var payload = Array.isArray(data) ? data[0] : data;
+                    setTimeout(function() {
+                        renderHtcChart(payload.labels, payload.valores, payload.color, payload
+                            .moneda);
+                    }, 80);
+                });
             });
         })();
     </script>

@@ -44,7 +44,7 @@ class ProyeccionSaldo extends Page
                 ->label('Descargar PDF')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('primary')
-                ->action(fn () => $this->descargarPdf()),
+                ->action(fn() => $this->descargarPdf()),
         ];
     }
 
@@ -56,7 +56,7 @@ class ProyeccionSaldo extends Page
     public function getDatos(): array
     {
         $cuenta = Cuenta::find($this->cuenta_id);
-        if (! $cuenta) {
+        if (!$cuenta) {
             return ['cuenta' => null, 'proyeccion' => []];
         }
 
@@ -142,7 +142,7 @@ class ProyeccionSaldo extends Page
     {
         $datos = $this->getDatos();
         $cuenta = $datos['cuenta'];
-        if (! $cuenta) {
+        if (!$cuenta) {
             return;
         }
 
@@ -155,8 +155,20 @@ class ProyeccionSaldo extends Page
         ])->setPaper('a4', 'portrait');
 
         return response()->streamDownload(
-            fn () => print ($pdf->output()),
-            'proyeccion_'.str_replace(' ', '_', $cuenta->nombre).'_'.now()->format('d_m_Y').'.pdf'
+            fn() => print ($pdf->output()),
+            'proyeccion_' . str_replace(' ', '_', $cuenta->nombre) . '_' . now()->format('d_m_Y') . '.pdf'
         );
+    }
+
+    public function updated($property): void
+    {
+        if (in_array($property, ['cuenta_id', 'meses', 'escenario'])) {
+            $datos = $this->getDatos();
+            $this->dispatch('updatePsChart', [
+                'proyeccion' => $datos['proyeccion'],
+                'saldoActual' => $datos['cuenta'] ? $datos['cuenta']->saldo_actual : 0,
+                'escenario' => $this->escenario,
+            ]);
+        }
     }
 }

@@ -73,7 +73,9 @@ class MovimientoForm
                                     ->relationship(
                                         name: 'categoria',
                                         titleAttribute: 'nombre',
-                                        modifyQueryUsing: fn (Get $get, $query) => $query->where('tipo', $get('tipo_movimiento'))
+                                        modifyQueryUsing: fn (Get $get, $query) => $query
+                                            ->where('tipo', $get('tipo_movimiento'))
+                                            ->orderBy('nombre', 'asc')
                                     )
                                     ->searchable()
                                     ->preload()
@@ -86,7 +88,9 @@ class MovimientoForm
                                     ->relationship(
                                         name: 'subcategoria',
                                         titleAttribute: 'nombre',
-                                        modifyQueryUsing: fn (Get $get, $query) => $query->where('categoria_id', $get('categoria_id'))
+                                        modifyQueryUsing: fn (Get $get, $query) => $query
+                                            ->where('categoria_id', $get('categoria_id'))
+                                            ->orderBy('nombre', 'asc')
                                     )
                                     ->label('Subcategoría')
                                     ->searchable()

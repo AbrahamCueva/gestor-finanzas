@@ -18,12 +18,18 @@ class AuditoriaSeguridad extends Page
     protected static ?int $navigationSort = 11;
 
     public string $filtro = 'todos';
+    public int $pagina = 1;
+    public int $porPagina = 20;
 
-    public function getLogs(): object
+    public function updatedFiltro(): void
+    {
+        $this->pagina = 1; // reset al cambiar filtro
+    }
+
+    public function getLogs(): array
     {
         $query = SecurityLog::where('user_id', auth()->id())
-            ->orderByDesc('created_at')
-            ->limit(100);
+            ->orderByDesc('created_at');
 
         if ($this->filtro === 'sospechosos') {
             $query->where('sospechoso', true);
@@ -31,17 +37,43 @@ class AuditoriaSeguridad extends Page
             $query->where('evento', $this->filtro);
         }
 
-        return $query->get();
+        $total = $query->count();
+        $items = $query->skip(($this->pagina - 1) * $this->porPagina)
+            ->take($this->porPagina)
+            ->get();
+
+        return [
+            'items' => $items,
+            'total' => $total,
+            'totalPaginas' => (int) ceil($total / $this->porPagina),
+        ];
+    }
+
+    public function paginaAnterior(): void
+    {
+        if ($this->pagina > 1)
+            $this->pagina--;
+    }
+
+    public function paginaSiguiente(int $totalPaginas): void
+    {
+        if ($this->pagina < $totalPaginas)
+            $this->pagina++;
+    }
+
+    public function irAPagina(int $p): void
+    {
+        $this->pagina = $p;
     }
 
     public function getResumen(): array
     {
         $userId = auth()->id();
         return [
-            'total'        => SecurityLog::where('user_id', $userId)->count(),
-            'sospechosos'  => SecurityLog::where('user_id', $userId)->where('sospechoso', true)->count(),
-            'ultimoLogin'  => SecurityLog::where('user_id', $userId)->where('evento', 'login_exitoso')->latest()->first()?->created_at?->diffForHumans() ?? '—',
-            'ipsUnicas'    => SecurityLog::where('user_id', $userId)->where('evento', 'login_exitoso')->distinct('ip')->count('ip'),
+            'total' => SecurityLog::where('user_id', $userId)->count(),
+            'sospechosos' => SecurityLog::where('user_id', $userId)->where('sospechoso', true)->count(),
+            'ultimoLogin' => SecurityLog::where('user_id', $userId)->where('evento', 'login_exitoso')->latest()->first()?->created_at?->diffForHumans() ?? '—',
+            'ipsUnicas' => SecurityLog::where('user_id', $userId)->where('evento', 'login_exitoso')->distinct('ip')->count('ip'),
         ];
     }
 }

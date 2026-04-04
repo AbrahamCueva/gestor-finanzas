@@ -161,13 +161,14 @@ class AnalisisCategorias extends Page
     public function updated($property)
     {
         if (in_array($property, ['categoriaId', 'meses', 'tipo'])) {
-            $detalle = $this->getDetalleCat();
-
-            if (!empty($detalle)) {
-                $this->dispatch('updateCatChart', [
-                    'meses' => $detalle['meses'],
-                    'tipo' => $this->tipo,
-                ]);
+            if ($this->categoriaId > 0) {
+                $detalle = $this->getDetalleCat();
+                if (!empty($detalle)) {
+                    $this->dispatch('updateCatChart', [
+                        'meses' => $detalle['meses'],
+                        'tipo' => $this->tipo,
+                    ]);
+                }
             }
         }
     }

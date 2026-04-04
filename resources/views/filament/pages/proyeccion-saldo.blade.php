@@ -285,13 +285,15 @@
                     <div class="ps-kpi">
                         <div class="ps-kpi-label">Saldo actual</div>
                         <div class="ps-kpi-value" style="color:#fbbf24;">S/
-                            {{ number_format($cuenta->saldo_actual, 2) }}</div>
+                            {{ number_format($cuenta->saldo_actual, 2) }}
+                        </div>
                         <div class="ps-kpi-sub">{{ $cuenta->nombre }}</div>
                     </div>
                     <div class="ps-kpi">
                         <div class="ps-kpi-label">Saldo proyectado</div>
                         <div class="ps-kpi-value" style="color:{{ $escColor }};">S/
-                            {{ number_format($datos['saldoFinal'], 2) }}</div>
+                            {{ number_format($datos['saldoFinal'], 2) }}
+                        </div>
                         <div class="ps-kpi-sub">en {{ $meses }} meses</div>
                     </div>
                     <div class="ps-kpi">
@@ -332,7 +334,8 @@
                             <tr>
                                 <td style="font-weight:600; color:var(--w-text);">{{ $fila['mes'] }}</td>
                                 <td style="color:#22c55e; font-weight:600;">S/
-                                    {{ number_format($fila['ingresos'], 2) }}</td>
+                                    {{ number_format($fila['ingresos'], 2) }}
+                                </td>
                                 <td style="color:#ef4444; font-weight:600;">S/ {{ number_format($fila['egresos'], 2) }}
                                 </td>
                                 <td style="color:{{ $fila['ahorro'] >= 0 ? '#60a5fa' : '#f97316' }}; font-weight:600;">
@@ -351,6 +354,119 @@
                     </tbody>
                 </table>
             </div>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+            <script>
+                (function() {
+                    function renderPsChart(proyeccion, saldoActual, escenario) {
+                        if (typeof Chart === 'undefined') {
+                            setTimeout(function() {
+                                renderPsChart(proyeccion, saldoActual, escenario);
+                            }, 100);
+                            return;
+                        }
+
+                        var ctx = document.getElementById('psChart');
+                        if (!ctx) return;
+
+                        if (window._psChart) {
+                            window._psChart.destroy();
+                            window._psChart = null;
+                        }
+                        if (!proyeccion.length) return;
+
+                        var escColor = escenario === 'optimista' ? '#22c55e' :
+                            escenario === 'pesimista' ? '#ef4444' :
+                            '#60a5fa';
+
+                        var labels = ['Hoy'].concat(proyeccion.map(function(p) {
+                            return p.mes;
+                        }));
+                        var saldos = [saldoActual].concat(proyeccion.map(function(p) {
+                            return p.saldo;
+                        }));
+
+                        window._psChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Saldo proyectado',
+                                    data: saldos,
+                                    borderColor: escColor,
+                                    backgroundColor: escColor + '18',
+                                    borderWidth: 2.5,
+                                    pointRadius: 5,
+                                    pointBackgroundColor: escColor,
+                                    tension: 0.4,
+                                    fill: true,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(c) {
+                                                return ' S/ ' + c.parsed.y.toFixed(2);
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            color: 'rgba(255,255,255,0.04)'
+                                        },
+                                        ticks: {
+                                            color: '#6b7280',
+                                            font: {
+                                                size: 11
+                                            }
+                                        }
+                                    },
+                                    y: {
+                                        grid: {
+                                            color: 'rgba(255,255,255,0.04)'
+                                        },
+                                        ticks: {
+                                            color: '#6b7280',
+                                            font: {
+                                                size: 11
+                                            },
+                                            callback: function(v) {
+                                                return 'S/ ' + v.toLocaleString();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Primera carga con datos del render inicial
+                    renderPsChart(
+                        @js($datos['proyeccion'] ?? []),
+                        @js($cuenta ? $cuenta->saldo_actual : 0),
+                        @js($escenario)
+                    );
+
+                    // Actualizaciones via dispatch desde Livewire
+                    document.addEventListener('livewire:init', function() {
+                        Livewire.on('updatePsChart', function(data) {
+                            var payload = Array.isArray(data) ? data[0] : data;
+                            setTimeout(function() {
+                                renderPsChart(payload.proyeccion, payload.saldoActual, payload
+                                    .escenario);
+                            }, 80);
+                        });
+                    });
+                })();
+            </script>
         @else
             <div style="text-align:center; color:var(--w-muted); padding:3rem; font-size:0.875rem;">
                 Selecciona una cuenta para ver la proyección.
@@ -358,81 +474,5 @@
         @endif
 
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-    <script>
-        (function() {
-            const proyeccion = @json($datos['proyeccion'] ?? []);
-            const saldoActual = {{ $cuenta?->saldo_actual ?? 0 }};
-            const escenario = '{{ $escenario }}';
-            const escColor = escenario === 'optimista' ? '#22c55e' : (escenario === 'pesimista' ? '#ef4444' :
-            '#60a5fa');
-
-            const ctx = document.getElementById('psChart');
-            if (!ctx || !proyeccion.length) return;
-
-            if (window._psChart) window._psChart.destroy();
-
-            const labels = ['Hoy', ...proyeccion.map(p => p.mes)];
-            const saldos = [saldoActual, ...proyeccion.map(p => p.saldo)];
-
-            window._psChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: 'Saldo proyectado',
-                        data: saldos,
-                        borderColor: escColor,
-                        backgroundColor: escColor + '18',
-                        borderWidth: 2.5,
-                        pointRadius: 5,
-                        pointBackgroundColor: escColor,
-                        tension: 0.4,
-                        fill: true,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: ctx => ' S/ ' + ctx.parsed.y.toFixed(2),
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.04)'
-                            },
-                            ticks: {
-                                color: '#6b7280',
-                                font: {
-                                    size: 11
-                                }
-                            },
-                        },
-                        y: {
-                            grid: {
-                                color: 'rgba(255,255,255,0.04)'
-                            },
-                            ticks: {
-                                color: '#6b7280',
-                                font: {
-                                    size: 11
-                                },
-                                callback: v => 'S/ ' + v.toLocaleString(),
-                            },
-                        }
-                    }
-                }
-            });
-        })();
-    </script>
 
 </x-filament-panels::page>

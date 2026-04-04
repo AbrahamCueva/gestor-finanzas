@@ -19,12 +19,23 @@ class ActivityObserver
 
     public function updated(Model $model): void
     {
-        ActivityLog::registrar(
-            'editar',
-            class_basename($model) . ' actualizado: ' . $this->getNombre($model),
-            $model,
-            $model->getChanges()
-        );
+        $cambios = $model->getChanges();
+
+        // 1. Definimos qué campos queremos ignorar
+        $ignorar = ['updated_at', 'remember_token', 'last_login_at'];
+
+        // 2. Filtramos el array de cambios
+        $cambiosRelevantes = array_diff_key($cambios, array_flip($ignorar));
+
+        // 3. Solo registramos si hay cambios reales después de filtrar
+        if (!empty($cambiosRelevantes)) {
+            ActivityLog::registrar(
+                'editar',
+                class_basename($model) . ' actualizado: ' . $this->getNombre($model),
+                $model,
+                $cambiosRelevantes
+            );
+        }
     }
 
     public function deleted(Model $model): void

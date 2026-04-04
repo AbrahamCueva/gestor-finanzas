@@ -2,6 +2,7 @@
     @php
         $logs = $this->getLogs();
         $resumen = $this->getResumen();
+        $totalPaginas = $logs['totalPaginas'];
     @endphp
 
     <style>
@@ -181,10 +182,61 @@
             background: rgba(107, 114, 128, 0.12);
             color: #6b7280;
         }
+
+        .as-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .as-pag-info {
+            font-size: 0.72rem;
+            color: var(--w-muted);
+        }
+
+        .as-pag-btns {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .as-pag-btn {
+            min-width: 30px;
+            height: 30px;
+            padding: 0 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border: 1px solid var(--w-border);
+            background: var(--w-card);
+            color: var(--w-muted);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .as-pag-btn:hover:not(:disabled) {
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+
+        .as-pag-btn.activo {
+            background: #fbbf24;
+            color: #0f172a;
+            border-color: #fbbf24;
+        }
+
+        .as-pag-btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
     </style>
 
     <div class="as-wrap">
 
+        {{-- KPIs --}}
         <div class="as-card">
             <div class="as-kpis">
                 <div class="as-kpi">
@@ -208,6 +260,7 @@
             </div>
         </div>
 
+        {{-- Tabla --}}
         <div class="as-card">
             <div class="as-filtros">
                 @foreach ([
@@ -241,7 +294,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($logs as $log)
+                        @forelse($logs['items'] as $log)
                             <tr class="{{ $log->sospechoso ? 'sospechoso' : '' }}">
                                 <td style="white-space:nowrap; color:var(--w-muted); font-size:0.72rem;">
                                     {{ $log->created_at->format('d/m/Y H:i') }}
@@ -285,7 +338,47 @@
                     </tbody>
                 </table>
             </div>
-        </div>
 
+            {{-- Paginación --}}
+            @if ($totalPaginas > 1)
+                <div class="as-pagination">
+                    <div class="as-pag-info">
+                        Página {{ $pagina }} de {{ $totalPaginas }} · {{ $logs['total'] }} registros
+                    </div>
+                    <div class="as-pag-btns">
+                        <button class="as-pag-btn" wire:click="paginaAnterior" @disabled($pagina <= 1)>‹</button>
+
+                        @php
+                            $inicio = max(1, $pagina - 2);
+                            $fin = min($totalPaginas, $pagina + 2);
+                        @endphp
+
+                        @if ($inicio > 1)
+                            <button class="as-pag-btn" wire:click="irAPagina(1)">1</button>
+                            @if ($inicio > 2)
+                                <span style="color:var(--w-muted); padding:0 .25rem; line-height:30px;">…</span>
+                            @endif
+                        @endif
+
+                        @for ($i = $inicio; $i <= $fin; $i++)
+                            <button class="as-pag-btn {{ $pagina == $i ? 'activo' : '' }}"
+                                wire:click="irAPagina({{ $i }})">{{ $i }}</button>
+                        @endfor
+
+                        @if ($fin < $totalPaginas)
+                            @if ($fin < $totalPaginas - 1)
+                                <span style="color:var(--w-muted); padding:0 .25rem; line-height:30px;">…</span>
+                            @endif
+                            <button class="as-pag-btn"
+                                wire:click="irAPagina({{ $totalPaginas }})">{{ $totalPaginas }}</button>
+                        @endif
+
+                        <button class="as-pag-btn" wire:click="paginaSiguiente({{ $totalPaginas }})"
+                            @disabled($pagina >= $totalPaginas)>›</button>
+                    </div>
+                </div>
+            @endif
+
+        </div>
     </div>
 </x-filament-panels::page>

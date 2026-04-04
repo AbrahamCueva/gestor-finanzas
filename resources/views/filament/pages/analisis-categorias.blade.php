@@ -217,6 +217,8 @@
             height: 220px;
         }
     </style>
+    {{-- Justo después del </style>, antes del <div class="ac"> --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
     <div class="ac">
 
@@ -238,7 +240,7 @@
 
                 <select wire:model.live="categoriaId" class="ac-select">
                     <option value="0">— Ver detalle de categoría —</option>
-                    @foreach($cats as $id => $nombre)
+                    @foreach ($cats as $id => $nombre)
                         <option value="{{ $id }}">{{ $nombre }}</option>
                     @endforeach
                 </select>
@@ -249,12 +251,13 @@
         <div class="ac-card">
             <div class="ac-title">🏷️ Ranking de categorías — últimos {{ $meses }} meses</div>
 
-            @if(count($resumen) > 0)
+            @if (count($resumen) > 0)
                 <div class="ac-grid">
-                    @foreach($resumen as $cat)
+                    @foreach ($resumen as $cat)
                         @php
                             $color = $cat['color'] ?? '#6b7280';
-                            $tendColor = $cat['tendencia'] > 0 ? '#ef4444' : ($cat['tendencia'] < 0 ? '#22c55e' : '#6b7280');
+                            $tendColor =
+                                $cat['tendencia'] > 0 ? '#ef4444' : ($cat['tendencia'] < 0 ? '#22c55e' : '#6b7280');
                             $tendEmoji = $cat['tendencia'] > 0 ? '↑' : ($cat['tendencia'] < 0 ? '↓' : '→');
                             $esActivo = $categoriaId == $cat['id'];
                         @endphp
@@ -263,20 +266,23 @@
 
                             <div class="ac-cat-header">
                                 <div class="ac-cat-nombre">{{ $cat['nombre'] }}</div>
-                                <div class="ac-cat-total" style="color:{{ $tipo === 'egreso' ? '#ef4444' : '#22c55e' }};">
+                                <div class="ac-cat-total"
+                                    style="color:{{ $tipo === 'egreso' ? '#ef4444' : '#22c55e' }};">
                                     S/ {{ number_format($cat['total'], 0) }}
                                 </div>
                             </div>
 
                             <div class="ac-bar-wrap">
                                 <div class="ac-bar-fill"
-                                    style="width:{{ ($cat['total'] / $maxTotal) * 100 }}%; background:{{ $color }};"></div>
+                                    style="width:{{ ($cat['total'] / $maxTotal) * 100 }}%; background:{{ $color }};">
+                                </div>
                             </div>
 
                             <div class="ac-cat-row">
                                 <span>{{ $cat['pct'] }}% del total</span>
                                 <span>{{ $cat['conteo'] }} movimientos</span>
-                                <span class="ac-tend" style="background:{{ $tendColor }}18; color:{{ $tendColor }};">
+                                <span class="ac-tend"
+                                    style="background:{{ $tendColor }}18; color:{{ $tendColor }};">
                                     {{ $tendEmoji }} {{ abs($cat['tendencia']) }}%
                                 </span>
                             </div>
@@ -294,7 +300,7 @@
         </div>
 
         {{-- Detalle de categoría seleccionada --}}
-        @if($categoriaId > 0 && count($detalle) > 0)
+        @if ($categoriaId > 0 && count($detalle) > 0)
             <div class="ac-card">
                 <div class="ac-title">
                     📊 Detalle — {{ $detalle['categoria']->nombre }}
@@ -309,7 +315,7 @@
 
                 {{-- Grid meses --}}
                 <div class="ac-detalle-grid">
-                    @foreach($detalle['meses'] as $m)
+                    @foreach ($detalle['meses'] as $m)
                         @php $altura = $detalle['max'] > 0 ? ($m['total'] / $detalle['max']) * 100 : 0; @endphp
                         <div class="ac-mes-item">
                             <div class="ac-mes-nombre">{{ $m['mes'] }}</div>
@@ -326,97 +332,126 @@
                     <div
                         style="font-size:.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.5rem;">
                         Top subcategorías por mes</div>
-                    @foreach($detalle['meses'] as $m)
-                        @if($m['topSub'] !== '—')
+                    @foreach ($detalle['meses'] as $m)
+                        @if ($m['topSub'] !== '—')
                             <div
                                 style="display:flex; gap:.5rem; font-size:.7rem; margin-bottom:.3rem; padding:.375rem .625rem; background:var(--card); border-radius:.375rem;">
-                                <span style="font-weight:700; color:var(--text); min-width:60px;">{{ $m['mes'] }}</span>
+                                <span
+                                    style="font-weight:700; color:var(--text); min-width:60px;">{{ $m['mes'] }}</span>
                                 <span style="color:var(--muted);">{{ $m['topSub'] }}</span>
                             </div>
                         @endif
                     @endforeach
                 </div>
             </div>
-
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-
-            <script>
-                let acChart;
-
-                function renderAcChart(meses, tipo) {
-                    const ctx = document.getElementById('acChart');
-                    if (!ctx) return;
-
-                    if (acChart) acChart.destroy();
-
-                    const color = tipo === 'egreso' ? '#ef4444' : '#22c55e';
-
-                    acChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: meses.map(m => m.mes),
-                            datasets: [{
-                                label: 'Monto mensual',
-                                data: meses.map(m => m.total),
-                                backgroundColor: color + '55',
-                                borderColor: color,
-                                borderWidth: 2,
-                                borderRadius: 6,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-
-                            interaction: {
-                                mode: 'index',
-                                intersect: false
-                            },
-
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    backgroundColor: 'rgba(15,23,42,.95)',
-                                    titleColor: '#f1f5f9',
-                                    bodyColor: '#cbd5e1',
-                                    callbacks: {
-                                        label: c => ` S/ ${c.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
-                                    }
-                                }
-                            },
-
-                            scales: {
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { color: '#6b7280', font: { size: 10 } }
-                                },
-                                y: {
-                                    beginAtZero: true,
-                                    grid: { color: 'rgba(255,255,255,.05)' },
-                                    ticks: {
-                                        color: '#6b7280',
-                                        callback: v => 'S/ ' + v
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-
-                document.addEventListener('livewire:init', () => {
-                    Livewire.on('updateCatChart', ({ meses, tipo }) => {
-                        setTimeout(() => {
-                            renderAcChart(meses, tipo);
-                        }, 50);
-                    });
-                });
-
-                // primera carga
-                document.addEventListener('DOMContentLoaded', () => {
-                    renderAcChart(@json($detalle['meses'] ?? []), @json($tipo));
-                });
-            </script>
         @endif
 
     </div>
+
+    <script>
+        (function() {
+            let acChart;
+
+            function renderAcChart(meses, tipo) {
+                // Esperar a que Chart.js esté disponible
+                if (typeof Chart === 'undefined') {
+                    setTimeout(() => renderAcChart(meses, tipo), 100);
+                    return;
+                }
+
+                const ctx = document.getElementById('acChart');
+                if (!ctx) return;
+
+                if (acChart) {
+                    acChart.destroy();
+                    acChart = null;
+                }
+
+                const color = tipo === 'egreso' ? '#ef4444' : '#22c55e';
+
+                acChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: meses.map(m => m.mes),
+                        datasets: [{
+                            label: 'Monto mensual',
+                            data: meses.map(m => m.total),
+                            backgroundColor: color + '55',
+                            borderColor: color,
+                            borderWidth: 2,
+                            borderRadius: 6,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15,23,42,.95)',
+                                titleColor: '#f1f5f9',
+                                bodyColor: '#cbd5e1',
+                                callbacks: {
+                                    label: c =>
+                                        ` S/ ${c.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255,255,255,.05)'
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    callback: v => 'S/ ' + v
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Escuchar evento dispatch de Livewire
+            document.addEventListener('livewire:init', () => {
+                Livewire.on('updateCatChart', (data) => {
+                    // Livewire v3 pasa los datos como array, el primer elemento es el payload
+                    const payload = Array.isArray(data) ? data[0] : data;
+                    setTimeout(() => renderAcChart(payload.meses, payload.tipo), 80);
+                });
+            });
+
+            // Primera carga (cuando el canvas ya existe en el HTML inicial)
+            document.addEventListener('DOMContentLoaded', () => {
+                const initialMeses = @json($detalle['meses'] ?? []);
+                const initialTipo = @json($tipo);
+                if (initialMeses.length > 0 && document.getElementById('acChart')) {
+                    renderAcChart(initialMeses, initialTipo);
+                }
+            });
+
+            // Para cuando Livewire re-renderiza y el canvas aparece en el DOM
+            document.addEventListener('livewire:navigated', () => {
+                const initialMeses = @json($detalle['meses'] ?? []);
+                const initialTipo = @json($tipo);
+                if (initialMeses.length > 0 && document.getElementById('acChart')) {
+                    setTimeout(() => renderAcChart(initialMeses, initialTipo), 80);
+                }
+            });
+        })();
+    </script>
 </x-filament-panels::page>

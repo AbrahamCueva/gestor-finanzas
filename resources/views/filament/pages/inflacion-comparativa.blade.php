@@ -248,7 +248,7 @@
         {{-- Filtro período --}}
         <div class="ic-card">
             <div class="ic-filtros">
-                @foreach([1 => '1 año', 2 => '2 años', 3 => '3 años'] as $val => $label)
+                @foreach ([1 => '1 año', 2 => '2 años', 3 => '3 años'] as $val => $label)
                     <button class="ic-filtro-btn {{ $anios == $val ? 'activo' : '' }}"
                         wire:click="$set('anios', {{ $val }})">
                         {{ $label }}
@@ -266,8 +266,8 @@
                 <div class="ic-analisis-titulo"
                     style="color:{{ $d['analisis']['estado'] === 'bueno' ? '#22c55e' : '#ef4444' }};">
                     {{ $d['analisis']['estado'] === 'bueno'
-    ? 'Tus gastos crecen menos que la inflación'
-    : 'Tus gastos crecen más que la inflación' }}
+                        ? 'Tus gastos crecen menos que la inflación'
+                        : 'Tus gastos crecen más que la inflación' }}
                 </div>
                 <div class="ic-analisis-desc">
                     En {{ $d['analisis']['mesesSuperan'] }} de {{ count($d['datos']) }} meses tus gastos subieron más
@@ -317,10 +317,11 @@
             <div class="ic-poder-card" style="border-color:{{ $d['diferenciaPoder'] > 0 ? '#ef4444' : '#22c55e' }};">
                 <div class="ic-poder-titulo">💰 Poder adquisitivo</div>
                 <div class="ic-poder-valor" style="color:{{ $d['diferenciaPoder'] > 0 ? '#ef4444' : '#22c55e' }};">
-                    {{ $d['diferenciaPoder'] > 0 ? '↑ +' : '↓ ' }}S/ {{ number_format(abs($d['diferenciaPoder']), 2) }}
+                    {{ $d['diferenciaPoder'] > 0 ? '↑ +' : '↓ ' }}S/
+                    {{ number_format(abs($d['diferenciaPoder']), 2) }}
                 </div>
                 <div class="ic-poder-desc">
-                    @if($d['diferenciaPoder'] > 0)
+                    @if ($d['diferenciaPoder'] > 0)
                         Tus gastos reales son S/ {{ number_format($d['diferenciaPoder'], 2) }} más de lo que deberían
                         considerando la inflación. Estás gastando más de lo que la inflación justifica.
                     @else
@@ -371,7 +372,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(array_reverse($d['datos']) as $fila)
+                        @foreach (array_reverse($d['datos']) as $fila)
                             <tr>
                                 <td style="font-weight:600; color:var(--w-text);">{{ $fila['mes'] }}</td>
                                 <td style="text-align:right; font-weight:600;">
@@ -388,7 +389,7 @@
                                     {{ $fila['inflacionAnual'] }}%
                                 </td>
                                 <td style="text-align:center;">
-                                    @if($fila['variacionGasto'] == 0)
+                                    @if ($fila['variacionGasto'] == 0)
                                         <span class="ic-badge ic-badge-neutral">—</span>
                                     @elseif($fila['variacionGasto'] > $fila['inflacionMensual'])
                                         <span class="ic-badge ic-badge-danger">↑ Sobre inflación</span>
@@ -408,78 +409,13 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
-        (function () {
-            const datos = @json($d['datos']);
-            const ctx = document.getElementById('icChart');
-            if (!ctx || !datos.length) return;
-
-            if (window._icChart) window._icChart.destroy();
-
-            window._icChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: datos.map(d => d.mes),
-                    datasets: [
-                        {
-                            label: 'Variación gasto %',
-                            data: datos.map(d => d.variacionGasto),
-                            borderColor: '#ef4444',
-                            backgroundColor: '#ef444422',
-                            pointBackgroundColor: '#ef4444',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            fill: false,
-                        },
-                        {
-                            label: 'Inflación mensual %',
-                            data: datos.map(d => d.inflacionMensual),
-                            borderColor: '#fbbf24',
-                            backgroundColor: '#fbbf2422',
-                            pointBackgroundColor: '#fbbf24',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            borderDash: [5, 5],
-                            fill: false,
-                        },
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: { labels: { color: '#6b7280', font: { size: 11 } } },
-                        tooltip: {
-                            backgroundColor: 'rgba(15,23,42,0.9)',
-                            titleColor: '#f1f5f9',
-                            bodyColor: '#94a3b8',
-                            callbacks: {
-                                label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%`
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { color: 'rgba(255,255,255,0.04)' },
-                            ticks: { color: '#6b7280', font: { size: 10 }, maxRotation: 45 },
-                        },
-                        y: {
-                            grid: { color: 'rgba(255,255,255,0.04)' },
-                            ticks: {
-                                color: '#6b7280', font: { size: 11 },
-                                callback: v => v + '%',
-                            },
-                        }
-                    }
-                }
-            });
-
-            // Línea de referencia en 0
-            const plugin = {
+        (function() {
+            var zeroLinePlugin = {
                 id: 'zeroLine',
-                afterDraw(chart) {
-                    const { ctx, scales: { y } } = chart;
-                    const yPos = y.getPixelForValue(0);
+                afterDraw: function(chart) {
+                    var ctx = chart.ctx;
+                    var y = chart.scales.y;
+                    var yPos = y.getPixelForValue(0);
                     ctx.save();
                     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
                     ctx.lineWidth = 1;
@@ -490,8 +426,128 @@
                     ctx.restore();
                 }
             };
-            Chart.register(plugin);
-            window._icChart.update();
+            Chart.register(zeroLinePlugin);
+
+            function renderIcChart(datos) {
+                if (typeof Chart === 'undefined') {
+                    setTimeout(function() {
+                        renderIcChart(datos);
+                    }, 100);
+                    return;
+                }
+
+                var ctx = document.getElementById('icChart');
+                if (!ctx || !datos.length) return;
+
+                if (window._icChart) {
+                    window._icChart.destroy();
+                    window._icChart = null;
+                }
+
+                window._icChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: datos.map(function(d) {
+                            return d.mes;
+                        }),
+                        datasets: [{
+                                label: 'Variación gasto %',
+                                data: datos.map(function(d) {
+                                    return d.variacionGasto;
+                                }),
+                                borderColor: '#ef4444',
+                                backgroundColor: '#ef444422',
+                                pointBackgroundColor: '#ef4444',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: false,
+                            },
+                            {
+                                label: 'Inflación mensual %',
+                                data: datos.map(function(d) {
+                                    return d.inflacionMensual;
+                                }),
+                                borderColor: '#fbbf24',
+                                backgroundColor: '#fbbf2422',
+                                pointBackgroundColor: '#fbbf24',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                borderDash: [5, 5],
+                                fill: false,
+                            },
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#6b7280',
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15,23,42,0.9)',
+                                titleColor: '#f1f5f9',
+                                bodyColor: '#94a3b8',
+                                callbacks: {
+                                    label: function(c) {
+                                        return ' ' + c.dataset.label + ': ' + c.parsed.y + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.04)'
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    font: {
+                                        size: 10
+                                    },
+                                    maxRotation: 45
+                                },
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255,255,255,0.04)'
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    font: {
+                                        size: 11
+                                    },
+                                    callback: function(v) {
+                                        return v + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Primera carga
+            renderIcChart(@js($d['datos']));
+
+            // Actualizaciones via dispatch
+            document.addEventListener('livewire:init', function() {
+                Livewire.on('updateIcChart', function(data) {
+                    var payload = Array.isArray(data) ? data[0] : data;
+                    setTimeout(function() {
+                        renderIcChart(payload.datos);
+                    }, 80);
+                });
+            });
         })();
     </script>
 </x-filament-panels::page>

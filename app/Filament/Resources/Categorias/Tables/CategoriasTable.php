@@ -55,6 +55,7 @@ class CategoriasTable
                     ->alignCenter()
                     ->sortable(),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 SelectFilter::make('tipo')
                     ->options([

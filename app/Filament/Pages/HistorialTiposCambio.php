@@ -31,10 +31,10 @@ class HistorialTiposCambio extends Page
     public function getMonedas(): array
     {
         return [
-            'USD' => ['label' => 'Dólar',          'color' => '#60a5fa', 'emoji' => '🇺🇸'],
-            'EUR' => ['label' => 'Euro',            'color' => '#a78bfa', 'emoji' => '🇪🇺'],
-            'BRL' => ['label' => 'Real brasileño',  'color' => '#34d399', 'emoji' => '🇧🇷'],
-            'CLP' => ['label' => 'Peso chileno',    'color' => '#fb923c', 'emoji' => '🇨🇱'],
+            'USD' => ['label' => 'Dólar', 'color' => '#60a5fa', 'emoji' => '🇺🇸'],
+            'EUR' => ['label' => 'Euro', 'color' => '#a78bfa', 'emoji' => '🇪🇺'],
+            'BRL' => ['label' => 'Real brasileño', 'color' => '#34d399', 'emoji' => '🇧🇷'],
+            'CLP' => ['label' => 'Peso chileno', 'color' => '#fb923c', 'emoji' => '🇨🇱'],
         ];
     }
 
@@ -64,8 +64,8 @@ class HistorialTiposCambio extends Page
             ];
         }
 
-        $labels = $historial->map(fn ($r) => $r->fecha->format('d/m'))->toArray();
-        $valores = $historial->pluck('tasa')->map(fn ($t) => round($t, 4))->toArray();
+        $labels = $historial->map(fn($r) => $r->fecha->format('d/m'))->toArray();
+        $valores = $historial->pluck('tasa')->map(fn($t) => round($t, 4))->toArray();
         $actual = last($valores);
         $primero = $valores[0];
         $maximo = max($valores);
@@ -93,5 +93,19 @@ class HistorialTiposCambio extends Page
         }
 
         return $resultado;
+    }
+
+    public function updated($property): void
+    {
+        if (in_array($property, ['moneda', 'periodo'])) {
+            $datos = $this->getDatos();
+            $monedas = $this->getMonedas();
+            $this->dispatch('updateHtcChart', [
+                'labels' => $datos['labels'],
+                'valores' => $datos['valores'],
+                'color' => $monedas[$this->moneda]['color'] ?? '#fbbf24',
+                'moneda' => $this->moneda,
+            ]);
+        }
     }
 }
