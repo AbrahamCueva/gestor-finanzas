@@ -130,7 +130,9 @@
 </div>
 
 <script>
-    const CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    if (!window.CSRF) {
+        window.CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    }
     let deferredPrompt = null;
 
     if ('serviceWorker' in navigator) {

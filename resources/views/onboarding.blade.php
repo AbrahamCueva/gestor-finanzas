@@ -458,8 +458,8 @@
     <div class="bg-glow"></div>
     <div class="particles">
         @for ($i = 0; $i < 12; $i++)
-            <div class="particle"
-                style="left:{{ rand(0, 100) }}%; --dur:{{ rand(6, 14) }}s; --delay:{{ rand(0, 8) }}s;"></div>
+            <div class="particle" style="left:{{ rand(0, 100) }}%; --dur:{{ rand(6, 14) }}s; --delay:{{ rand(0, 8) }}s;">
+            </div>
         @endfor
     </div>
 
@@ -531,8 +531,7 @@
 
                 <div class="ob-field">
                     <label class="ob-label">Nombre de la cuenta</label>
-                    <input class="ob-input" id="cta_nombre" placeholder="ej: Cuenta BCP, Efectivo, Yape..."
-                        type="text">
+                    <input class="ob-input" id="cta_nombre" placeholder="ej: Cuenta BCP, Efectivo, Yape..." type="text">
                 </div>
                 <div class="ob-grid-2">
                     <div class="ob-field">
@@ -557,8 +556,8 @@
                 </div>
                 <div class="ob-field">
                     <label class="ob-label">Saldo inicial</label>
-                    <input class="ob-input" id="cta_saldo" placeholder="0.00" type="number" min="0"
-                        step="0.01" value="0">
+                    <input class="ob-input" id="cta_saldo" placeholder="0.00" type="number" min="0" step="0.01"
+                        value="0">
                 </div>
 
                 <div class="ob-btns">
@@ -660,27 +659,29 @@
     <script>
         let pasoActual = 0;
         let categoriasGuardadas = [];
-        const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+        if (!window.CSRF) {
+            window.CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        }
 
         // Categorías por defecto
         const catsSugeridas = [{
-                nombre: 'Alimentación',
-                tipo: 'egreso',
-                icono: '🍔',
-                color: '#f97316'
-            },
-            {
-                nombre: 'Transporte',
-                tipo: 'egreso',
-                icono: '🚌',
-                color: '#60a5fa'
-            },
-            {
-                nombre: 'Salario',
-                tipo: 'ingreso',
-                icono: '💼',
-                color: '#22c55e'
-            },
+            nombre: 'Alimentación',
+            tipo: 'egreso',
+            icono: '🍔',
+            color: '#f97316'
+        },
+        {
+            nombre: 'Transporte',
+            tipo: 'egreso',
+            icono: '🚌',
+            color: '#60a5fa'
+        },
+        {
+            nombre: 'Salario',
+            tipo: 'ingreso',
+            icono: '💼',
+            color: '#22c55e'
+        },
         ];
 
         function irPaso(paso) {
@@ -762,7 +763,7 @@
             row.innerHTML = `
             <input class="ob-input" placeholder="Nombre" value="${data.nombre ?? ''}" id="cat-nombre-${id}">
             <select class="ob-select" id="cat-tipo-${id}">
-                <option value="egreso"  ${(data.tipo ?? 'egreso') === 'egreso'  ? 'selected' : ''}>Egreso</option>
+                <option value="egreso"  ${(data.tipo ?? 'egreso') === 'egreso' ? 'selected' : ''}>Egreso</option>
                 <option value="ingreso" ${(data.tipo ?? '') === 'ingreso' ? 'selected' : ''}>Ingreso</option>
             </select>
             <input class="ob-input" placeholder="🏷️" value="${data.icono ?? ''}" id="cat-icono-${id}" style="width:52px; text-align:center;">

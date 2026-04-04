@@ -1,10 +1,21 @@
-<x-filament-panels::page>
-    @php
+<?php if (isset($component)) { $__componentOriginal166a02a7c5ef5a9331faf66fa665c256 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal166a02a7c5ef5a9331faf66fa665c256 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament-panels::components.page.index','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('filament-panels::page'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+    <?php
         $resumen = $this->getResumenCategorias();
         $detalle = $this->getDetalleCat();
         $cats = $this->getCategorias();
         $maxTotal = collect($resumen)->max('total') ?: 1;
-    @endphp
+    ?>
 
     <style>
         :root {
@@ -220,13 +231,13 @@
 
     <div class="ac">
 
-        {{-- Toolbar --}}
+        
         <div class="ac-card">
             <div class="ac-toolbar">
                 <div class="ac-tipo-btns">
-                    <button class="ac-tipo-btn {{ $tipo === 'egreso' ? 'on-egreso' : '' }}"
+                    <button class="ac-tipo-btn <?php echo e($tipo === 'egreso' ? 'on-egreso' : ''); ?>"
                         wire:click="$set('tipo','egreso')">🔴 Egresos</button>
-                    <button class="ac-tipo-btn {{ $tipo === 'ingreso' ? 'on-ingreso' : '' }}"
+                    <button class="ac-tipo-btn <?php echo e($tipo === 'ingreso' ? 'on-ingreso' : ''); ?>"
                         wire:click="$set('tipo','ingreso')">🟢 Ingresos</button>
                 </div>
 
@@ -238,103 +249,106 @@
 
                 <select wire:model.live="categoriaId" class="ac-select">
                     <option value="0">— Ver detalle de categoría —</option>
-                    @foreach($cats as $id => $nombre)
-                        <option value="{{ $id }}">{{ $nombre }}</option>
-                    @endforeach
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $cats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $nombre): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                        <option value="<?php echo e($id); ?>"><?php echo e($nombre); ?></option>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                 </select>
             </div>
         </div>
 
-        {{-- Resumen categorías --}}
+        
         <div class="ac-card">
-            <div class="ac-title">🏷️ Ranking de categorías — últimos {{ $meses }} meses</div>
+            <div class="ac-title">🏷️ Ranking de categorías — últimos <?php echo e($meses); ?> meses</div>
 
-            @if(count($resumen) > 0)
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(count($resumen) > 0): ?>
                 <div class="ac-grid">
-                    @foreach($resumen as $cat)
-                        @php
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $resumen; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                        <?php
                             $color = $cat['color'] ?? '#6b7280';
                             $tendColor = $cat['tendencia'] > 0 ? '#ef4444' : ($cat['tendencia'] < 0 ? '#22c55e' : '#6b7280');
                             $tendEmoji = $cat['tendencia'] > 0 ? '↑' : ($cat['tendencia'] < 0 ? '↓' : '→');
                             $esActivo = $categoriaId == $cat['id'];
-                        @endphp
-                        <div class="ac-cat-card {{ $esActivo ? 'activo' : '' }}"
-                            wire:click="$set('categoriaId', {{ $cat['id'] }})">
+                        ?>
+                        <div class="ac-cat-card <?php echo e($esActivo ? 'activo' : ''); ?>"
+                            wire:click="$set('categoriaId', <?php echo e($cat['id']); ?>)">
 
                             <div class="ac-cat-header">
-                                <div class="ac-cat-nombre">{{ $cat['nombre'] }}</div>
-                                <div class="ac-cat-total" style="color:{{ $tipo === 'egreso' ? '#ef4444' : '#22c55e' }};">
-                                    S/ {{ number_format($cat['total'], 0) }}
+                                <div class="ac-cat-nombre"><?php echo e($cat['nombre']); ?></div>
+                                <div class="ac-cat-total" style="color:<?php echo e($tipo === 'egreso' ? '#ef4444' : '#22c55e'); ?>;">
+                                    S/ <?php echo e(number_format($cat['total'], 0)); ?>
+
                                 </div>
                             </div>
 
                             <div class="ac-bar-wrap">
                                 <div class="ac-bar-fill"
-                                    style="width:{{ ($cat['total'] / $maxTotal) * 100 }}%; background:{{ $color }};"></div>
+                                    style="width:<?php echo e(($cat['total'] / $maxTotal) * 100); ?>%; background:<?php echo e($color); ?>;"></div>
                             </div>
 
                             <div class="ac-cat-row">
-                                <span>{{ $cat['pct'] }}% del total</span>
-                                <span>{{ $cat['conteo'] }} movimientos</span>
-                                <span class="ac-tend" style="background:{{ $tendColor }}18; color:{{ $tendColor }};">
-                                    {{ $tendEmoji }} {{ abs($cat['tendencia']) }}%
+                                <span><?php echo e($cat['pct']); ?>% del total</span>
+                                <span><?php echo e($cat['conteo']); ?> movimientos</span>
+                                <span class="ac-tend" style="background:<?php echo e($tendColor); ?>18; color:<?php echo e($tendColor); ?>;">
+                                    <?php echo e($tendEmoji); ?> <?php echo e(abs($cat['tendencia'])); ?>%
                                 </span>
                             </div>
 
                             <div class="ac-cat-row">
-                                <span>Prom/mes: S/ {{ number_format($cat['promMensual'], 2) }}</span>
-                                <span>Prom/mov: S/ {{ number_format($cat['promPorMov'], 2) }}</span>
+                                <span>Prom/mes: S/ <?php echo e(number_format($cat['promMensual'], 2)); ?></span>
+                                <span>Prom/mov: S/ <?php echo e(number_format($cat['promPorMov'], 2)); ?></span>
                             </div>
                         </div>
-                    @endforeach
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                 </div>
-            @else
+            <?php else: ?>
                 <div style="text-align:center; color:var(--muted); padding:2rem;">Sin datos para este período.</div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
 
-        {{-- Detalle de categoría seleccionada --}}
-        @if($categoriaId > 0 && count($detalle) > 0)
+        
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($categoriaId > 0 && count($detalle) > 0): ?>
             <div class="ac-card">
                 <div class="ac-title">
-                    📊 Detalle — {{ $detalle['categoria']->nombre }}
+                    📊 Detalle — <?php echo e($detalle['categoria']->nombre); ?>
+
                     <span style="color:var(--muted); font-weight:400;">· Promedio S/
-                        {{ number_format($detalle['promedio'], 2) }}/mes</span>
+                        <?php echo e(number_format($detalle['promedio'], 2)); ?>/mes</span>
                 </div>
 
-                {{-- Gráfico --}}
+                
                 <div class="ac-chart-wrap" style="margin-bottom:1rem;" wire:ignore>
                     <canvas id="acChart"></canvas>
                 </div>
 
-                {{-- Grid meses --}}
+                
                 <div class="ac-detalle-grid">
-                    @foreach($detalle['meses'] as $m)
-                        @php $altura = $detalle['max'] > 0 ? ($m['total'] / $detalle['max']) * 100 : 0; @endphp
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $detalle['meses']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                        <?php $altura = $detalle['max'] > 0 ? ($m['total'] / $detalle['max']) * 100 : 0; ?>
                         <div class="ac-mes-item">
-                            <div class="ac-mes-nombre">{{ $m['mes'] }}</div>
-                            <div class="ac-mes-valor" style="color:{{ $tipo === 'egreso' ? '#ef4444' : '#22c55e' }};">
-                                {{ $m['total'] > 0 ? 'S/' . number_format($m['total'], 0) : '—' }}
+                            <div class="ac-mes-nombre"><?php echo e($m['mes']); ?></div>
+                            <div class="ac-mes-valor" style="color:<?php echo e($tipo === 'egreso' ? '#ef4444' : '#22c55e'); ?>;">
+                                <?php echo e($m['total'] > 0 ? 'S/' . number_format($m['total'], 0) : '—'); ?>
+
                             </div>
-                            <div class="ac-mes-conteo">{{ $m['conteo'] }} movs.</div>
+                            <div class="ac-mes-conteo"><?php echo e($m['conteo']); ?> movs.</div>
                         </div>
-                    @endforeach
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                 </div>
 
-                {{-- Top subcategorías por mes --}}
+                
                 <div style="margin-top:1rem;">
                     <div
                         style="font-size:.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.5rem;">
                         Top subcategorías por mes</div>
-                    @foreach($detalle['meses'] as $m)
-                        @if($m['topSub'] !== '—')
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $detalle['meses']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($m['topSub'] !== '—'): ?>
                             <div
                                 style="display:flex; gap:.5rem; font-size:.7rem; margin-bottom:.3rem; padding:.375rem .625rem; background:var(--card); border-radius:.375rem;">
-                                <span style="font-weight:700; color:var(--text); min-width:60px;">{{ $m['mes'] }}</span>
-                                <span style="color:var(--muted);">{{ $m['topSub'] }}</span>
+                                <span style="font-weight:700; color:var(--text); min-width:60px;"><?php echo e($m['mes']); ?></span>
+                                <span style="color:var(--muted);"><?php echo e($m['topSub']); ?></span>
                             </div>
-                        @endif
-                    @endforeach
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                 </div>
             </div>
 
@@ -413,10 +427,19 @@
 
                 // primera carga
                 document.addEventListener('DOMContentLoaded', () => {
-                    renderAcChart(@json($detalle['meses'] ?? []), @json($tipo));
+                    renderAcChart(<?php echo json_encode($detalle['meses'] ?? [], 15, 512) ?>, <?php echo json_encode($tipo, 15, 512) ?>);
                 });
             </script>
-        @endif
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     </div>
-</x-filament-panels::page>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal166a02a7c5ef5a9331faf66fa665c256)): ?>
+<?php $attributes = $__attributesOriginal166a02a7c5ef5a9331faf66fa665c256; ?>
+<?php unset($__attributesOriginal166a02a7c5ef5a9331faf66fa665c256); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal166a02a7c5ef5a9331faf66fa665c256)): ?>
+<?php $component = $__componentOriginal166a02a7c5ef5a9331faf66fa665c256; ?>
+<?php unset($__componentOriginal166a02a7c5ef5a9331faf66fa665c256); ?>
+<?php endif; ?><?php /**PATH C:\Users\ricoa\Documents\gestor-finanzas\resources\views/filament/pages/analisis-categorias.blade.php ENDPATH**/ ?>

@@ -293,7 +293,7 @@
 
         .se-chart-wrap {
             position: relative;
-            height: 260px;
+            height: 320px;
         }
 
         /* Presets */
@@ -514,7 +514,7 @@
         {{-- Gráfico proyección --}}
         <div class="se-card">
             <div class="se-title">📈 Proyección de saldo — {{ $mesesProyeccion }} meses</div>
-            <div class="se-chart-wrap">
+            <div class="se-chart-wrap" wire:ignore>
                 <canvas id="seChart"></canvas>
             </div>
         </div>
@@ -570,14 +570,17 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
     <script>
-        function initSeChart() {
-            const proyeccion = @json($sim['proyeccion']);
+        let chart;
+
+        function renderChart(proyeccion) {
             const ctx = document.getElementById('seChart');
             if (!ctx) return;
-            if (window._seChart) window._seChart.destroy();
 
-            window._seChart = new Chart(ctx, {
+            if (chart) chart.destroy();
+
+            chart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: proyeccion.map(p => p.mes),
@@ -586,45 +589,97 @@
                             label: 'Saldo simulado',
                             data: proyeccion.map(p => p.saldo),
                             borderColor: '#fbbf24',
-                            backgroundColor: 'rgba(251,191,36,.1)',
-                            borderWidth: 2.5, tension: 0.4,
-                            pointRadius: 4, fill: true,
+                            backgroundColor: (context) => {
+                                const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 260);
+                                gradient.addColorStop(0, 'rgba(251,191,36,.35)');
+                                gradient.addColorStop(1, 'rgba(251,191,36,0)');
+                                return gradient;
+                            },
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            fill: true,
                         },
                         {
-                            label: 'Saldo actual (sin cambios)',
+                            label: 'Saldo actual',
                             data: proyeccion.map(p => p.saldoBase),
                             borderColor: '#6b7280',
-                            backgroundColor: 'transparent',
-                            borderWidth: 1.5, tension: 0.4,
-                            borderDash: [5, 5], pointRadius: 3,
-                        },
+                            borderWidth: 2,
+                            tension: 0.4,
+                            borderDash: [6, 6],
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                        }
                     ]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
+                    responsive: true,
+                    maintainAspectRatio: false, // 🔥 clave
+
+                    layout: {
+                        padding: { top: 10, bottom: 5 }
+                    },
+
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+
                     plugins: {
-                        legend: { labels: { color: '#6b7280', font: { size: 11 } } },
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: '#6b7280',
+                                font: { size: 11 }
+                            }
+                        },
+
                         tooltip: {
-                            backgroundColor: 'rgba(15,23,42,.9)',
-                            titleColor: '#f1f5f9', bodyColor: '#94a3b8',
-                            callbacks: { label: c => ` ${c.dataset.label}: S/ ${c.parsed.y.toFixed(2)}` }
+                            enabled: true,
+                            backgroundColor: 'rgba(15,23,42,.95)',
+                            titleColor: '#f1f5f9',
+                            bodyColor: '#cbd5f5',
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: (ctx) => {
+                                    return `${ctx.dataset.label}: S/ ${ctx.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                                }
+                            }
                         }
                     },
+
                     scales: {
-                        x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 10 } } },
-                        y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#6b7280', callback: v => 'S/' + v.toLocaleString() } }
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: '#6b7280',
+                                font: { size: 10 }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255,255,255,.05)'
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                callback: (v) => 'S/ ' + v.toLocaleString()
+                            }
+                        }
                     }
                 }
             });
+        }
 
-            // Actualizar gráfico cuando Livewire actualiza
-            document.addEventListener('livewire:updated', () => {
-                if (window._seChart) window._seChart.destroy();
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('updateChart', ({ proyeccion }) => {
+                renderChart(proyeccion);
             });
-        };
+        });
 
-        initSeChart();
-        document.addEventListener('livewire:updated', initSeChart);
+        document.addEventListener('DOMContentLoaded', () => {
+            renderChart(@json($sim['proyeccion']));
+        });
     </script>
 </x-filament-panels::page>

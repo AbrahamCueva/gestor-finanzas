@@ -130,7 +130,9 @@
 </div>
 
 <script>
-    const CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    if (!window.CSRF) {
+        window.CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    }
     let deferredPrompt = null;
 
     if ('serviceWorker' in navigator) {
@@ -234,5 +236,4 @@
         for (let i = 0; i < raw.length; ++i) output[i] = raw.charCodeAt(i);
         return output;
     }
-</script>
-<?php /**PATH C:\Users\ricoa\Documents\gestor-finanzas\resources\views/filament/pwa-sw.blade.php ENDPATH**/ ?>
+</script><?php /**PATH C:\Users\ricoa\Documents\gestor-finanzas\resources\views/filament/pwa-sw.blade.php ENDPATH**/ ?>

@@ -402,7 +402,9 @@
 <script>
     let iaAbierto = false;
     let iaHistorial = [];
-    const CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    if (!window.CSRF) {
+        window.CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    }
 
     function toggleIA() {
         iaAbierto = !iaAbierto;
@@ -451,7 +453,7 @@
             .replace(/\n/g, '<br>')
             .replace(/💡 <strong>Acciones sugeridas:<\/strong>/g,
                 '<div style="margin-top:0.5rem; padding:0.5rem 0.75rem; background:rgba(99,102,241,0.1); border-radius:0.5rem; border-left:2px solid #6366f1;">💡 <strong style="color:#a5b4fc;">Acciones sugeridas:</strong>'
-                );
+            );
 
         div.appendChild(avatar);
         div.appendChild(bubble);
@@ -511,7 +513,7 @@
                 },
                 body: JSON.stringify({
                     mensaje,
-                    historial: iaHistorial.slice(-10), 
+                    historial: iaHistorial.slice(-10),
                 }),
             });
 
@@ -535,5 +537,4 @@
             input.focus();
         }
     }
-</script>
-<?php /**PATH C:\Users\ricoa\Documents\gestor-finanzas\resources\views/filament/asistente-ia.blade.php ENDPATH**/ ?>
+</script><?php /**PATH C:\Users\ricoa\Documents\gestor-finanzas\resources\views/filament/asistente-ia.blade.php ENDPATH**/ ?>

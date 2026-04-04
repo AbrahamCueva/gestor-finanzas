@@ -1,10 +1,21 @@
-<x-filament-panels::page>
-    @php
+<?php if (isset($component)) { $__componentOriginal166a02a7c5ef5a9331faf66fa665c256 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal166a02a7c5ef5a9331faf66fa665c256 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'filament-panels::components.page.index','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('filament-panels::page'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+    <?php
         $d = $this->getDatos();
         $mes = $this->getMesActual();
         $anio = $this->getAnioActual();
         $nombresMeses = [1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'];
-    @endphp
+    ?>
 
     <style>
         :root {
@@ -216,61 +227,68 @@
 
     <div class="fc">
 
-        {{-- Toolbar --}}
+        
         <div class="fc-card">
             <div class="fc-toolbar">
                 <div class="fc-nav">
                     <button class="fc-nav-btn" wire:click="anteriorMes">‹</button>
-                    <div class="fc-periodo">{{ $nombresMeses[$mes] }} {{ $anio }}</div>
+                    <div class="fc-periodo"><?php echo e($nombresMeses[$mes]); ?> <?php echo e($anio); ?></div>
                     <button class="fc-nav-btn" wire:click="siguienteMes">›</button>
                 </div>
                 <div style="font-size:.72rem; color:var(--muted);">
-                    {{ $d['diasConMovs'] }} días con movimientos de {{ count($d['flujo']) }} días totales
+                    <?php echo e($d['diasConMovs']); ?> días con movimientos de <?php echo e(count($d['flujo'])); ?> días totales
                 </div>
             </div>
         </div>
 
-        {{-- KPIs --}}
+        
         <div class="fc-card">
             <div class="fc-kpis">
                 <div class="fc-kpi">
                     <div class="fc-kpi-label">Total ingresos</div>
-                    <div class="fc-kpi-value" style="color:var(--green);">S/ {{ number_format($d['totalIngresos'], 2) }}
+                    <div class="fc-kpi-value" style="color:var(--green);">S/ <?php echo e(number_format($d['totalIngresos'], 2)); ?>
+
                     </div>
                 </div>
                 <div class="fc-kpi">
                     <div class="fc-kpi-label">Total egresos</div>
-                    <div class="fc-kpi-value" style="color:var(--red);">S/ {{ number_format($d['totalEgresos'], 2) }}
+                    <div class="fc-kpi-value" style="color:var(--red);">S/ <?php echo e(number_format($d['totalEgresos'], 2)); ?>
+
                     </div>
                 </div>
                 <div class="fc-kpi">
                     <div class="fc-kpi-label">Flujo neto</div>
-                    <div class="fc-kpi-value" style="color:{{ $d['totalNeto'] >= 0 ? 'var(--blue)' : 'var(--red)' }};">
-                        {{ $d['totalNeto'] >= 0 ? '+' : '' }}S/ {{ number_format($d['totalNeto'], 2) }}
+                    <div class="fc-kpi-value" style="color:<?php echo e($d['totalNeto'] >= 0 ? 'var(--blue)' : 'var(--red)'); ?>;">
+                        <?php echo e($d['totalNeto'] >= 0 ? '+' : ''); ?>S/ <?php echo e(number_format($d['totalNeto'], 2)); ?>
+
                     </div>
                 </div>
                 <div class="fc-kpi">
                     <div class="fc-kpi-label">Mejor día</div>
                     <div class="fc-kpi-value" style="color:var(--green);">
-                        {{ $d['mejorDia'] ? 'Día ' . $d['mejorDia']['dia'] : '—' }}
+                        <?php echo e($d['mejorDia'] ? 'Día ' . $d['mejorDia']['dia'] : '—'); ?>
+
                     </div>
                     <div class="fc-kpi-sub">
-                        {{ $d['mejorDia'] ? '+S/ ' . number_format($d['mejorDia']['neto'], 2) : '' }}
+                        <?php echo e($d['mejorDia'] ? '+S/ ' . number_format($d['mejorDia']['neto'], 2) : ''); ?>
+
                     </div>
                 </div>
                 <div class="fc-kpi">
                     <div class="fc-kpi-label">Peor día</div>
                     <div class="fc-kpi-value" style="color:var(--red);">
-                        {{ $d['peorDia'] ? 'Día ' . $d['peorDia']['dia'] : '—' }}
+                        <?php echo e($d['peorDia'] ? 'Día ' . $d['peorDia']['dia'] : '—'); ?>
+
                     </div>
                     <div class="fc-kpi-sub">
-                        {{ $d['peorDia'] ? 'S/ ' . number_format($d['peorDia']['neto'], 2) : '' }}
+                        <?php echo e($d['peorDia'] ? 'S/ ' . number_format($d['peorDia']['neto'], 2) : ''); ?>
+
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Gráfico --}}
+        
         <div class="fc-card">
             <div class="fc-title">📈 Flujo acumulado del mes</div>
             <div class="fc-chart-wrap" wire:ignore>
@@ -278,7 +296,7 @@
             </div>
         </div>
 
-        {{-- Tabla día a día --}}
+        
         <div class="fc-card">
             <div class="fc-title">📅 Detalle día a día</div>
             <div style="overflow-x:auto; max-height:420px; overflow-y:auto;">
@@ -294,43 +312,48 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($d['flujo'] as $fila)
-                            @if($fila['ingresos'] > 0 || $fila['egresos'] > 0 || !$fila['esFuturo'])
-                                <tr class="{{ $fila['esFuturo'] ? 'futuro' : '' }}">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $d['flujo']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $fila): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($fila['ingresos'] > 0 || $fila['egresos'] > 0 || !$fila['esFuturo']): ?>
+                                <tr class="<?php echo e($fila['esFuturo'] ? 'futuro' : ''); ?>">
                                     <td style="font-weight:700; color:var(--text);">
-                                        {{ $fila['fecha'] }}
-                                        @if($fila['esFuturo'])<span
-                                        style="font-size:.58rem; color:var(--muted);">futuro</span>@endif
+                                        <?php echo e($fila['fecha']); ?>
+
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($fila['esFuturo']): ?><span
+                                        style="font-size:.58rem; color:var(--muted);">futuro</span><?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </td>
                                     <td style="text-align:right; color:var(--green); font-weight:600;">
-                                        {{ $fila['ingresos'] > 0 ? '+S/ ' . number_format($fila['ingresos'], 2) : '—' }}
+                                        <?php echo e($fila['ingresos'] > 0 ? '+S/ ' . number_format($fila['ingresos'], 2) : '—'); ?>
+
                                     </td>
                                     <td style="text-align:right; color:var(--red); font-weight:600;">
-                                        {{ $fila['egresos'] > 0 ? '-S/ ' . number_format($fila['egresos'], 2) : '—' }}
+                                        <?php echo e($fila['egresos'] > 0 ? '-S/ ' . number_format($fila['egresos'], 2) : '—'); ?>
+
                                     </td>
                                     <td
-                                        style="text-align:right; font-weight:700; color:{{ $fila['neto'] >= 0 ? 'var(--green)' : 'var(--red)' }};">
-                                        {{ $fila['neto'] >= 0 ? '+' : '' }}S/ {{ number_format($fila['neto'], 2) }}
+                                        style="text-align:right; font-weight:700; color:<?php echo e($fila['neto'] >= 0 ? 'var(--green)' : 'var(--red)'); ?>;">
+                                        <?php echo e($fila['neto'] >= 0 ? '+' : ''); ?>S/ <?php echo e(number_format($fila['neto'], 2)); ?>
+
                                     </td>
                                     <td
-                                        style="text-align:right; font-weight:700; color:{{ $fila['acumulado'] >= 0 ? 'var(--blue)' : 'var(--red)' }};">
-                                        S/ {{ number_format($fila['acumulado'], 2) }}
+                                        style="text-align:right; font-weight:700; color:<?php echo e($fila['acumulado'] >= 0 ? 'var(--blue)' : 'var(--red)'); ?>;">
+                                        S/ <?php echo e(number_format($fila['acumulado'], 2)); ?>
+
                                     </td>
                                     <td>
-                                        @if($fila['neto'] > 0)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($fila['neto'] > 0): ?>
                                             <span class="fc-badge" style="background:rgba(34,197,94,.12); color:var(--green);">✓
                                                 Positivo</span>
-                                        @elseif($fila['neto'] < 0)
+                                        <?php elseif($fila['neto'] < 0): ?>
                                             <span class="fc-badge" style="background:rgba(239,68,68,.12); color:var(--red);">↓
                                                 Negativo</span>
-                                        @else
+                                        <?php else: ?>
                                             <span class="fc-badge" style="background:var(--card); color:var(--muted);">—
                                                 Neutro</span>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </td>
                                 </tr>
-                            @endif
-                        @endforeach
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -341,7 +364,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script>
         function initFcChart() {
-            const flujo = @json($d['flujo']);
+            const flujo = <?php echo json_encode($d['flujo'], 15, 512) ?>;
             const ctx = document.getElementById('fcChart');
             if (!ctx) return;
             if (window._fcChart) window._fcChart.destroy();
@@ -403,4 +426,13 @@
             setTimeout(initFcChart, 50);
         });
     </script>
-</x-filament-panels::page>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal166a02a7c5ef5a9331faf66fa665c256)): ?>
+<?php $attributes = $__attributesOriginal166a02a7c5ef5a9331faf66fa665c256; ?>
+<?php unset($__attributesOriginal166a02a7c5ef5a9331faf66fa665c256); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal166a02a7c5ef5a9331faf66fa665c256)): ?>
+<?php $component = $__componentOriginal166a02a7c5ef5a9331faf66fa665c256; ?>
+<?php unset($__componentOriginal166a02a7c5ef5a9331faf66fa665c256); ?>
+<?php endif; ?><?php /**PATH C:\Users\ricoa\Documents\gestor-finanzas\resources\views/filament/pages/flujo-caja.blade.php ENDPATH**/ ?>

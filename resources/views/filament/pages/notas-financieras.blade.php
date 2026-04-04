@@ -440,7 +440,9 @@
     </div>
 
     <script>
-        const CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        if (!window.CSRF) {
+            window.CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        }
 
         function abrirEditar(id, titulo, tipo, contenido, color) {
             document.getElementById('nfEditId').value = id;
@@ -480,12 +482,12 @@
             window.Livewire?.all().forEach(c => {
                 try {
                     c.$wire.call('$refresh');
-                } catch (e) {}
+                } catch (e) { }
             });
         }
 
         // Cerrar modal al hacer click fuera
-        document.getElementById('nfModalOverlay').addEventListener('click', function(e) {
+        document.getElementById('nfModalOverlay').addEventListener('click', function (e) {
             if (e.target === this) cerrarModal();
         });
     </script>

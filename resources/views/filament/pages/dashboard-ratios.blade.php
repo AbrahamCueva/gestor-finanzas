@@ -324,7 +324,8 @@
             <div class="dr-base">
                 <div class="dr-base-item">
                     <div class="dr-base-label">Ingresos promedio</div>
-                    <div class="dr-base-value" style="color:#22c55e;">S/ {{ number_format($d['ingresosProm'], 2) }}</div>
+                    <div class="dr-base-value" style="color:#22c55e;">S/ {{ number_format($d['ingresosProm'], 2) }}
+                    </div>
                 </div>
                 <div class="dr-base-item">
                     <div class="dr-base-label">Egresos promedio</div>
@@ -391,8 +392,8 @@
                         // Formatear valor
                         $valorDisplay =
                             $r['unidad'] === ' S/'
-                                ? 'S/ ' . number_format(abs($r['valor']), 0)
-                                : number_format($r['valor'], 1) . $r['unidad'];
+                            ? 'S/ ' . number_format(abs($r['valor']), 0)
+                            : number_format($r['valor'], 1) . $r['unidad'];
                     @endphp
 
                     <div class="dr-ratio {{ $r['estado'] }}">
@@ -440,63 +441,88 @@
             if (!ctx || !historial.length) return;
             if (window._drChart) window._drChart.destroy();
 
+            // Detectar modo oscuro de Filament
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+
+            // Calcular el valor máximo de los datos para darle "aire" al gráfico
+            const maxDataValue = Math.max(
+                ...historial.map(h => h.tasaAhorro || 0),
+                ...historial.map(h => h.ratioGastos || 0),
+                25 // Mínimo para que el objetivo del 20% no quede pegado al techo
+            );
+
             window._drChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: historial.map(h => h.mes),
                     datasets: [{
-                            label: 'Tasa de ahorro %',
-                            data: historial.map(h => h.tasaAhorro),
-                            borderColor: '#22c55e',
-                            backgroundColor: 'rgba(34,197,94,.08)',
-                            borderWidth: 2.5,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            fill: true,
-                            pointBackgroundColor: '#22c55e',
-                        },
-                        {
-                            label: 'Ratio gastos %',
-                            data: historial.map(h => h.ratioGastos),
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239,68,68,.08)',
-                            borderWidth: 2.5,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            fill: true,
-                            pointBackgroundColor: '#ef4444',
-                        },
-                        {
-                            label: 'Objetivo ahorro (20%)',
-                            data: historial.map(() => 20),
-                            borderColor: 'rgba(251,191,36,.5)',
-                            borderWidth: 1.5,
-                            borderDash: [5, 5],
-                            pointRadius: 0,
-                            fill: false,
-                        },
+                        label: 'Tasa de ahorro %',
+                        data: historial.map(h => h.tasaAhorro),
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34,197,94,.08)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        pointBackgroundColor: '#22c55e',
+                    },
+                    {
+                        label: 'Ratio gastos %',
+                        data: historial.map(h => h.ratioGastos),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,.08)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        pointBackgroundColor: '#ef4444',
+                    },
+                    {
+                        label: 'Objetivo ahorro (20%)',
+                        data: historial.map(() => 20),
+                        borderColor: isDark ? 'rgba(251,191,36,.4)' : 'rgba(217,119,6, .4)',
+                        borderWidth: 2,
+                        borderDash: [6, 6],
+                        pointRadius: 0,
+                        fill: false,
+                    },
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            top: 25, // Espacio extra para que el punto verde no se corte
+                            bottom: 5
+                        }
+                    },
                     interaction: {
                         mode: 'index',
                         intersect: false
                     },
                     plugins: {
                         legend: {
+                            position: 'top',
+                            align: 'end',
                             labels: {
-                                color: '#6b7280',
-                                font: {
-                                    size: 11
-                                }
+                                color: textColor,
+                                usePointStyle: true,
+                                font: { size: 11, weight: '600' }
                             }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(15,23,42,.9)',
-                            titleColor: '#f1f5f9',
-                            bodyColor: '#94a3b8',
+                            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                            titleColor: isDark ? '#f8fafc' : '#1e293b',
+                            bodyColor: textColor,
+                            borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
                             callbacks: {
                                 label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}%`
                             }
@@ -504,33 +530,33 @@
                     },
                     scales: {
                         x: {
-                            grid: {
-                                display: false
-                            },
+                            grid: { display: false },
                             ticks: {
-                                color: '#6b7280',
-                                font: {
-                                    size: 10
-                                }
+                                color: textColor,
+                                font: { size: 10 }
                             }
                         },
                         y: {
+                            beginAtZero: true,
+                            suggestedMax: maxDataValue + 15, // Dinámico: máximo valor + margen de seguridad
                             grid: {
-                                color: 'rgba(255,255,255,.04)'
+                                color: gridColor,
+                                drawBorder: false
                             },
                             ticks: {
-                                color: '#6b7280',
+                                color: textColor,
+                                font: { size: 10 },
                                 callback: v => v + '%'
-                            },
-                            min: 0,
-                            max: 120,
+                            }
                         }
                     }
                 }
             });
         }
 
+        // Inicialización y soporte para Livewire
         initDrChart();
+        document.addEventListener('livewire:navigated', initDrChart);
         document.addEventListener('livewire:updated', initDrChart);
     </script>
 </x-filament-panels::page>
