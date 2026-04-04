@@ -161,27 +161,6 @@
             ]
         },
         {
-            id: 'escritorio',
-            title: '📊 Dashboard Financiero',
-            text: 'Aquí tienes un resumen completo de tu situación financiera. Puedes ver tu balance total, ingresos y egresos del mes, ahorro generado, presupuestos, movimientos recientes y estadísticas como tu racha de ahorro y regla 50/30/20. Todo se actualiza automáticamente para darte una visión clara de tu dinero.',
-            attachTo: {
-                element: '[href*="/"]',
-                on: 'right'
-            },
-            buttons: [
-                {
-                    text: '← Atrás',
-                    action: tour.back,
-                    classes: 'shepherd-button-secondary'
-                },
-                {
-                    text: 'Siguiente →',
-                    action: tour.next,
-                    classes: 'shepherd-button-primary'
-                },
-            ]
-        },
-        {
             id: 'cuentas',
             title: '🏦 Cuentas',
             text: 'Registra tus cuentas bancarias, billeteras digitales y efectivo. Cada cuenta tiene su propio saldo que se actualiza automáticamente.',
@@ -887,30 +866,281 @@
             id: 'lista-compras',
             title: '🛒 Lista de Compras',
             text: 'Guarda los productos que necesitas comprar con prioridad y precio estimado. Recibirás recordatorios diarios por app y correo hasta marcarlos como comprados.',
-            attachTo: { element: '[href*="lista-compras"]', on: 'right' },
-            buttons: [
-                { text: '← Atrás', action: tour.back, classes: 'shepherd-button-secondary' },
-                { text: 'Siguiente →', action: tour.next, classes: 'shepherd-button-primary' },
+            attachTo: {
+                element: '[href*="lista-compras"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
             ]
         },
         {
             id: 'inflacion',
             title: '📈 Inflación vs Gastos',
             text: 'Compara tus gastos con la inflación peruana del BCRP. Detecta si estás gastando más o menos que lo que la inflación justifica.',
-            attachTo: { element: '[href*="inflacion"]', on: 'right' },
-            buttons: [
-                { text: '← Atrás', action: tour.back, classes: 'shepherd-button-secondary' },
-                { text: 'Siguiente →', action: tour.next, classes: 'shepherd-button-primary' },
+            attachTo: {
+                element: '[href*="inflacion"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
             ]
         },
         {
             id: 'notas',
             title: '📝 Notas Financieras',
             text: 'Bloc de notas dentro de RICOX. Crea notas, recordatorios e ideas con colores personalizados y fíjalas para tenerlas siempre arriba.',
-            attachTo: { element: '[href*="notas"]', on: 'right' },
-            buttons: [
-                { text: '← Atrás', action: tour.back, classes: 'shepherd-button-secondary' },
-                { text: 'Siguiente →', action: tour.next, classes: 'shepherd-button-primary' },
+            attachTo: {
+                element: '[href*="notas"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'retos-financieros',
+            title: '🎯 Retos Financieros',
+            text: 'Participa en retos mensuales para mejorar tus finanzas: 30 días sin gastos hormiga, semana de ahorro extremo, desafío de no gastar en cafés y más.',
+            attachTo: {
+                element: '[href*="/retos-financieros"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'gastos-hormiga',
+            title: '🐜 Gastos Hormiga',
+            text: 'Registra y analiza tus gastos pequeños que se acumulan con el tiempo. Mantén el control de dónde va tu dinero.',
+            attachTo: {
+                element: '[href*="/gastos-hormiga"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'prediccion-categorias',
+            title: '🔮 Predicción por Categoría',
+            text: 'Descubre cómo RICOX puede predecir tus gastos futuros según las categorías más comunes.',
+            attachTo: {
+                element: '[href*="/prediccion-categorias"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+
+        },
+        {
+            id: 'dashboard-ratios',
+            title: '📊 Dashboard de Ratios Financieros',
+            text: 'Visualiza y analiza los principales ratios financieros de tu negocio. Evalúa el rendimiento y la salud financiera con gráficos interactivos.',
+            attachTo: {
+                element: '[href*="/dashboard-ratios"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'comparativa-anio-anio',
+            title: '📈 Comparativa Año a Año',
+            text: 'Compara el rendimiento financiero de tu negocio entre dos años consecutivos. Identifica tendencias, mejoras y áreas de oportunidad con gráficos claros y detallados.',
+            attachTo: {
+                element: '[href*="/comparativa-anio-anio"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'benchmark-financiero',
+            title: '📊 Benchmark Financiero',
+            text: 'Compara tus ratios financieros con los promedios de tu industria. Identifica fortalezas y debilidades en relación a tus competidores para tomar decisiones informadas y mejorar tu posición en el mercado.',
+            attachTo: {
+                element: '[href*="/benchmark-financiero"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'metodo-deudas',
+            title: '💳 Método de las Deudas',
+            text: 'Aprende cómo RICOX puede ayudarte a gestionar y optimizar tus deudas. Descubre estrategias efectivas para mejorar tu situación financiera.',
+            attachTo: {
+                element: '[href*="/metodo-deudas"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'simulador-escenarios',
+            title: '🔮 Simulador de Escenarios',
+            text: 'Explora diferentes escenarios financieros con nuestro simulador. Ajusta variables clave para ver cómo podrían afectar tu negocio y tomar decisiones informadas para el futuro.',
+            attachTo: {
+                element: '[href*="/simulador-escenarios"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'punto-equilibrio',
+            title: '⚖️ Punto de Equilibrio',
+            text: 'Calcula el punto de equilibrio de tu negocio con nuestro análisis detallado. Identifica cuántas unidades necesitas vender para cubrir tus costos y empezar a generar ganancias.',
+            attachTo: {
+                element: '[href*="/punto-equilibrio"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'analisis-categorias',
+            title: '📊 Análisis por Categoría',
+            text: 'Obtén un análisis detallado de tus gastos e ingresos por categoría. Identifica cuáles son las áreas más costosas y cuáles generan más ingresos para optimizar tu presupuesto y mejorar tu rentabilidad.',
+            attachTo: {
+                element: '[href*="/analisis-categorias"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
+            ]
+        },
+        {
+            id: 'flujo-caja',
+            title: '💰 Flujo de Caja',
+            text: 'Analiza el flujo de caja de tus finanzas para entender cómo entra y sale el dinero. Identifica patrones y toma decisiones informadas para mantener una saludable situación financiera.',
+            attachTo: {
+                element: '[href*="/flujo-caja"]',
+                on: 'right'
+            },
+            buttons: [{
+                text: '← Atrás',
+                action: tour.back,
+                classes: 'shepherd-button-secondary'
+            },
+            {
+                text: 'Siguiente →',
+                action: tour.next,
+                classes: 'shepherd-button-primary'
+            },
             ]
         },
         {
