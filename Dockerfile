@@ -42,6 +42,6 @@ RUN rm .env
 
 EXPOSE 8000
 
-CMD php artisan migrate --force && \
+CMD php artisan migrate --force --graceful && \
     php artisan optimize && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
