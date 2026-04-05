@@ -11,7 +11,6 @@
         "ariefng/filament-calculator": "^1.2",
         "bacon/bacon-qr-code": "^3.0",
         "barryvdh/laravel-dompdf": "^3.1",
-        "benriadh1/filament-notification-bell": "^1.0",
         "bezhansalleh/filament-shield": "^4.2",
         "charrafimed/global-search-modal": "^5.0",
         "cms-multi/filament-clear-cache": "^3.0",
