@@ -21,14 +21,14 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
         $this->app->bind(LogoutResponse::class, function () {
-            return new class implements LogoutResponse
-            {
+            return new class implements LogoutResponse {
                 public function toResponse($request)
                 {
                     return redirect('/');
@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Event::listen(Login::class,  AuditarLoginExitoso::class);
+        Event::listen(Login::class, AuditarLoginExitoso::class);
         Event::listen(Failed::class, AuditarLoginFallido::class);
         User::observe(UserObserver::class);
 
@@ -70,5 +70,9 @@ class AppServiceProvider extends ServiceProvider
                 );
             }
         });
+
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }
