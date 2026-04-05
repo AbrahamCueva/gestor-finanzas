@@ -26,7 +26,6 @@ RUN mkdir -p storage/framework/cache \
              bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Crear .env mínimo solo para el build
 RUN echo "APP_KEY=base64:tmpkeyfortmpfortmpfortmpfortmpfortmpfort=" > .env \
     && echo "APP_ENV=production" >> .env \
     && echo "CACHE_DRIVER=array" >> .env \
@@ -35,9 +34,10 @@ RUN echo "APP_KEY=base64:tmpkeyfortmpfortmpfortmpfortmpfortmpfort=" > .env \
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 RUN npm ci && npm run build
+
+RUN php artisan filament:assets
 RUN php artisan storage:link
 
-# Limpiar el .env temporal, el real viene de Railway en runtime
 RUN rm .env
 
 EXPOSE 8000

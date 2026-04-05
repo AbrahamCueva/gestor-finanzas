@@ -2,6 +2,7 @@
 
 return [
     'admin_email' => env('ADMIN_EMAIL', ''),
+    'asset_url' => env('ASSET_URL', null),
 
     /*
     |--------------------------------------------------------------------------
