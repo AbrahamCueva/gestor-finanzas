@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Cuenta;
 use App\Models\Deuda;
 use App\Models\Meta;
 use App\Models\Movimiento;
@@ -193,26 +194,26 @@ class NotificacionesService
         $color = $ahorro >= 0 ? 'success' : 'warning';
 
         Notification::make()
-            ->title("{$emoji} Resumen semanal — {$semana}")
-            ->body(
-                '**Ingresos:** S/ ' . number_format($ingresos, 2) . "\n" .
-                    '**Egresos:** S/ ' . number_format($egresos, 2) . "\n" .
-                    '**Ahorro:** S/ ' . number_format($ahorro, 2) . "\n" .
-                    "**Movimientos:** {$totalMovs}"
-            )
+                    ->title("{$emoji} Resumen semanal — {$semana}")
+                    ->body(
+                        'Ingresos: S/ ' . number_format($ingresos, 2) . "\n" .
+                        'Egresos: S/ ' . number_format($egresos, 2) . "\n" .
+                        'Ahorro: S/ ' . number_format($ahorro, 2) . "\n" .
+                        "Movimientos: {$totalMovs}"
+                    )
             ->{$color}()
-            ->actions([
-                Action::make('ver')
-                    ->label('Ver dashboard')
-                    ->url(route('filament.admin.pages.dashboard'))
-                    ->button(),
-            ])
-            ->sendToDatabase(auth()->user() ?? User::first());
+                ->actions([
+                    Action::make('ver')
+                        ->label('Ver dashboard')
+                        ->url(route('filament.admin.pages.dashboard'))
+                        ->button(),
+                ])
+                ->sendToDatabase(auth()->user() ?? User::first());
     }
 
     public function verificarSaldosBajos(): void
     {
-        $cuentas = \App\Models\Cuenta::where('activa', true)
+        $cuentas = Cuenta::where('activa', true)
             ->whereNotNull('saldo_minimo')
             ->get();
 
@@ -230,8 +231,8 @@ class NotificacionesService
             Notification::make()
                 ->title('Saldo bajo en ' . $cuenta->nombre)
                 ->body(
-                    "El saldo de **{$cuenta->nombre}** es S/ " . number_format($cuenta->saldo_actual, 2) .
-                        ', por debajo del mínimo configurado de S/ ' . number_format($cuenta->saldo_minimo, 2) . '.'
+                    "El saldo de {$cuenta->nombre} es S/ " . number_format($cuenta->saldo_actual, 2) .
+                    ', por debajo del mínimo configurado de S/ ' . number_format($cuenta->saldo_minimo, 2) . '.'
                 )
                 ->danger()
                 ->persistent()

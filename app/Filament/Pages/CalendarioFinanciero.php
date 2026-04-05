@@ -87,7 +87,7 @@ class CalendarioFinanciero extends Page
             ->whereNotNull('recordar_en')
             ->whereBetween('recordar_en', [$inicio, $fin])
             ->get()
-            ->groupBy(fn($n) => Carbon::parse($n->recordatorio_en)->toDateString());
+            ->groupBy(fn($n) => Carbon::parse($n->recordar_en)->toDateString());
 
         $deudas = Deuda::whereNotNull('fecha_vencimiento')
             ->whereBetween('fecha_vencimiento', [$inicio, $fin])
@@ -231,10 +231,20 @@ class CalendarioFinanciero extends Page
 
     private function getFeriados(int $anio): array
     {
+        // Calcular Domingo de Pascua
+        $pascua = Carbon::createFromTimestamp(easter_date($anio));
+
+        // Semana Santa
+        $juevesSanto = $pascua->copy()->subDays(3)->toDateString();
+        $viernesSanto = $pascua->copy()->subDays(2)->toDateString();
+
         return [
             "$anio-01-01" => "Año Nuevo",
-            "$anio-04-17" => "Jueves Santo",
-            "$anio-04-18" => "Viernes Santo",
+
+            // Semana Santa (dinámico)
+            $juevesSanto => "Jueves Santo",
+            $viernesSanto => "Viernes Santo",
+
             "$anio-05-01" => "Día del Trabajo",
             "$anio-06-07" => "Batalla de Arica",
             "$anio-06-29" => "San Pedro y San Pablo",

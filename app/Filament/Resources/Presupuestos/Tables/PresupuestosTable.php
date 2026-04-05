@@ -19,10 +19,18 @@ class PresupuestosTable
     public static function configure(Table $table): Table
     {
         $meses = [
-            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo',
-            4 => 'Abril', 5 => 'Mayo', 6 => 'Junio',
-            7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre',
-            10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre',
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre',
         ];
 
         return $table
@@ -41,29 +49,31 @@ class PresupuestosTable
 
                 TextColumn::make('gasto_actual')
                     ->label('Gastado')
-                    ->state(fn ($record) => $record->gastoActual())
+                    ->state(fn($record) => $record->gastoActual())
                     ->money('PEN')
-                    ->color(fn ($record) => $record->superado() ? 'danger' : ($record->enAlerta() ? 'warning' : 'success')),
+                    ->color(fn($record) => $record->superado() ? 'danger' : ($record->enAlerta() ? 'warning' : 'success')),
 
                 TextColumn::make('porcentaje')
                     ->label('Progreso')
-                    ->state(fn ($record) => $record->porcentaje().'%')
+                    ->state(fn($record) => $record->porcentaje() . '%')
                     ->badge()
-                    ->color(fn ($record) => $record->superado() ? 'danger' : ($record->enAlerta() ? 'warning' : 'success')),
+                    ->color(fn($record) => $record->superado() ? 'danger' : ($record->enAlerta() ? 'warning' : 'success')),
 
                 TextColumn::make('periodo')
                     ->label('Período')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => ucfirst($state))
+                    ->formatStateUsing(fn($state) => ucfirst($state))
                     ->color('gray'),
 
                 TextColumn::make('mes')
                     ->label('Mes')
-                    ->formatStateUsing(fn ($state) => $meses[$state] ?? '—')
+                    ->state(fn($record) => \Carbon\Carbon::parse($record->fecha_inicio)->month)
+                    ->formatStateUsing(fn($state) => $meses[$state] ?? '—')
                     ->sortable(),
 
                 TextColumn::make('anio')
                     ->label('Año')
+                    ->state(fn($record) => \Carbon\Carbon::parse($record->fecha_inicio)->year)
                     ->sortable(),
 
                 IconColumn::make('activo')
@@ -82,15 +92,27 @@ class PresupuestosTable
 
                 SelectFilter::make('mes')
                     ->label('Mes')
-                    ->options($meses),
+                    ->options($meses)
+                    ->query(function ($query, $data) {
+                        if (!$data['value'])
+                            return $query;
+
+                        return $query->whereMonth('fecha_inicio', $data['value']);
+                    }),
 
                 SelectFilter::make('anio')
                     ->label('Año')
                     ->options(
                         collect(range(now()->year - 2, now()->year + 1))
-                            ->mapWithKeys(fn ($y) => [$y => $y])
+                            ->mapWithKeys(fn($y) => [$y => $y])
                             ->toArray()
-                    ),
+                    )
+                    ->query(function ($query, $data) {
+                        if (!$data['value'])
+                            return $query;
+
+                        return $query->whereYear('fecha_inicio', $data['value']);
+                    }),
 
                 TernaryFilter::make('activo')
                     ->label('Estado')
