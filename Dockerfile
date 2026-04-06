@@ -37,7 +37,16 @@ RUN php artisan filament:assets
 RUN php artisan storage:link
 RUN rm .env
 
-# Nginx config
+RUN chmod 1777 /tmp \
+    && mkdir -p /var/lib/nginx/tmp \
+    && chmod -R 777 /var/lib/nginx/tmp
+
+RUN echo "sys_temp_dir = /tmp" >> /usr/local/etc/php/conf.d/php.ini \
+    && echo "upload_tmp_dir = /tmp" >> /usr/local/etc/php/conf.d/php.ini
+
+RUN echo 'opcache.enable=1\nopcache.memory_consumption=128\nopcache.max_accelerated_files=10000\nopcache.revalidate_freq=0' \
+    > /usr/local/etc/php/conf.d/opcache.ini
+
 RUN echo 'server { \n\
     listen $PORT; \n\
     root /app/public; \n\
@@ -50,14 +59,7 @@ RUN echo 'server { \n\
     } \n\
 }' > /etc/nginx/sites-available/default
 
-RUN echo 'opcache.enable=1\nopcache.memory_consumption=128\nopcache.max_accelerated_files=10000\nopcache.revalidate_freq=0' \
-    > /usr/local/etc/php/conf.d/opcache.ini
-
 EXPOSE 8000
-
-RUN chmod 1777 /tmp \
-    && mkdir -p /var/lib/nginx/tmp \
-    && chmod -R 777 /var/lib/nginx/tmp
 
 CMD php artisan migrate --force --graceful && \
     php artisan optimize && \
