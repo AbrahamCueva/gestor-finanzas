@@ -29,8 +29,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->ignore(ErrorException::class, function (ErrorException $e) {
-            return $e->getSeverity() === E_NOTICE;
-        });
+        //
     })
     ->create();
