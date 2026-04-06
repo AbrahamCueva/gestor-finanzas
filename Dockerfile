@@ -63,6 +63,7 @@ EXPOSE 8000
 
 CMD php artisan migrate --force --graceful && \
     php artisan optimize && \
+    chown -R www-data:www-data /app/storage /app/bootstrap/cache && \
     php-fpm -D && \
     sed -i "s/\$PORT/${PORT:-8000}/" /etc/nginx/sites-available/default && \
     nginx -g 'daemon off;'
