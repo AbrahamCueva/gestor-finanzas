@@ -5,6 +5,7 @@ use App\Http\Middleware\ModoVacacionesMiddleware;
 use App\Http\Middleware\OnboardingMiddleware;
 use App\Http\Middleware\PinMiddleware;
 use App\Http\Middleware\RegistrarSesion;
+use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\TwoFactorMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             TwoFactorMiddleware::class,
             RegistrarSesion::class,
             ModoVacacionesMiddleware::class,
+            TrustProxies::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
