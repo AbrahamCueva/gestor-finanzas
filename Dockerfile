@@ -1,9 +1,9 @@
-FROM php:8.3-cli
+FROM php:8.3-fpm
 
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libzip-dev libpng-dev \
     libxml2-dev libonig-dev libexif-dev \
-    libicu-dev \
+    libicu-dev nginx \
     && docker-php-ext-install \
     pdo pdo_mysql mbstring xml zip \
     gd bcmath exif intl opcache
@@ -45,8 +45,25 @@ RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
     && echo "upload_tmp_dir=/tmp" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "error_reporting=E_ALL & ~E_NOTICE & ~E_DEPRECATED" >> /usr/local/etc/php/conf.d/custom.ini
 
+# Nginx config
+RUN printf 'server {\n\
+    listen RAILWAY_PORT;\n\
+    root /app/public;\n\
+    index index.php;\n\
+    client_max_body_size 100M;\n\
+    location / { try_files $uri $uri/ /index.php?$query_string; }\n\
+    location ~ \\.php$ {\n\
+        fastcgi_pass 127.0.0.1:9000;\n\
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;\n\
+        fastcgi_read_timeout 300;\n\
+        fastcgi_send_timeout 300;\n\
+        include fastcgi_params;\n\
+    }\n\
+}\n' > /etc/nginx/sites-available/default
+
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
 EXPOSE 8000
 
-CMD php artisan migrate --force --graceful && \
-    php artisan optimize && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+CMD ["/start.sh"]
