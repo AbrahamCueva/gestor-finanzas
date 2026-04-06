@@ -51,10 +51,13 @@ RUN echo 'server { \n\
     listen $PORT; \n\
     root /app/public; \n\
     index index.php; \n\
+    client_max_body_size 100M; \n\
     location / { try_files $uri $uri/ /index.php?$query_string; } \n\
     location ~ \.php$ { \n\
         fastcgi_pass 127.0.0.1:9000; \n\
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name; \n\
+        fastcgi_read_timeout 300; \n\
+        fastcgi_send_timeout 300; \n\
         include fastcgi_params; \n\
     } \n\
 }' > /etc/nginx/sites-available/default
