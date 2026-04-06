@@ -55,6 +55,10 @@ RUN echo 'opcache.enable=1\nopcache.memory_consumption=128\nopcache.max_accelera
 
 EXPOSE 8000
 
+RUN chmod 1777 /tmp \
+    && mkdir -p /var/lib/nginx/tmp \
+    && chmod -R 777 /var/lib/nginx/tmp
+
 CMD php artisan migrate --force --graceful && \
     php artisan optimize && \
     php-fpm -D && \
