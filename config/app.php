@@ -3,6 +3,9 @@
 return [
     'admin_email' => env('ADMIN_EMAIL', ''),
     'asset_url' => env('ASSET_URL', null),
+    'secure' => env('SESSION_SECURE_COOKIE', true),
+    'same_site' => 'lax',
+    'domain' => null,
 
     /*
     |--------------------------------------------------------------------------
